@@ -1,0 +1,37 @@
+export class GitHubService {
+  // ... métodos existentes ...
+
+  async syncWithGitHub(
+    owner: string,
+    repo: string,
+    files: Record<string, string>,
+    message: string
+  ) {
+    return this.pushAllFiles(owner, repo, files, message);
+  }
+
+  async getRepoStructure(owner: string, repo: string) {
+    const files: Record<string, string> = {};
+    
+    async function fetchDir(path: string) {
+      try {
+        const contents = await this.getRepoContents(owner, repo, path);
+        if (!Array.isArray(contents)) return;
+
+        for (const item of contents) {
+          if (item.type === 'file' && item.size < 500000) {
+            const content = await this.getFileContent(owner, repo, item.path);
+            files[item.path] = content;
+          } else if (item.type === 'dir') {
+            await fetchDir(item.path);
+          }
+        }
+      } catch (error) {
+        console.error(`Erro ao buscar ${path}:`, error);
+      }
+    }
+
+    await fetchDir('');
+    return files;
+  }
+}
