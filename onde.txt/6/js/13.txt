@@ -1,0 +1,31 @@
+sk-mini-editor/
+├── index.html                          ← ARQUIVO PRINCIPAL
+├── css/                                ← PASTA CSS (9 arquivos)
+│   ├── style.css
+│   ├── sidebar.css
+│   ├── editor.css
+│   ├── tabs.css
+│   ├── preview.css
+│   ├── buttons.css
+│   ├── responsive.css
+│   ├── theme-dark.css
+│   └── theme-light.css
+├── js/                                 ← PASTA JS (17 arquivos)
+│   ├── mini-utils.js
+│   ├── mini-validator.js
+│   ├── mini-storage.js
+│   ├── mini-vfs.js
+│   ├── mini-filetree.js
+│   ├── mini-tabs.js
+│   ├── mini-preview.js
+│   ├── mini-youtube.js
+│   ├── mini-import-export.js
+│   ├── mini-github.js
+│   ├── mini-theme.js
+│   ├── mini-syntax.js
+│   ├── mini-search.js
+│   ├── mini-shortcuts.js
+│   ├── mini-events.js
+│   ├── mini-editor.js
+│   └── mini-init.js
+└── lib/                                ← PASTA LIB (vazia - usa CDN)
