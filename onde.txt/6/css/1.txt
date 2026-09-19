@@ -1,0 +1,31 @@
+.theme-light {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f3f3f3;
+    --text-primary: #333333;
+    --text-secondary: #000000;
+    --accent: #0078d4;
+    --border: #e0e0e0;
+}
+
+.theme-light body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.theme-light .sidebar {
+    background: var(--bg-secondary);
+    border-right-color: var(--border);
+}
+
+.theme-light #editor {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+}
+
+.theme-light .btn {
+    background: var(--accent);
+}
+
+.theme-light .tab {
+    background: var(--bg-secondary);
+}
