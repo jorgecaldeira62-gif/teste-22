@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#58a6ff" />
+  <title>Playground Pro</title>
+
+  <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Playground%22,%22short_name%22:%22Playground%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230d1117%22,%22theme_color%22:%22%2358a6ff%22}" />
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel-2: #21262d;
+      --editor: #0d1117;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --border: #30363d;
+      --primary: #58a6ff;
+      --success: #3fb950;
+      --error: #f85149;
+    }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --panel: #f6f8fa;
+      --panel-2: #eaeef2;
+      --editor: #ffffff;
+      --text: #24292f;
+      --muted: #57606a;
+      --border: #d0d7de;
+      --primary: #0969da;
+      --success: #1a7f0f;
+      --error: #d1242f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--panel-2);
+      border-color: var(--primary);
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn.primary:hover {
+      background: #79c0ff;
+    }
+
+    .btn.success {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+
+    #status {
+      padding: 8px 12px;
+      background: transparent;
+      color: var(--text);
+      font-size: 12px;
+      min-height: 24px;
+    }
+
+    #status.success {
+      background: var(--success);
+      color: white;
+    }
+
+    #status.error {
+      background: var(--error);
+      color: white;
+    }
+
+    .main {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      gap: 0;
+    }
+
+    .menu-section {
+      width: 250px;
+      border-right: 1px solid var(--border);
+      background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .menu-header {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .menu-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      margin: 2px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .menu-item:hover {
+      background: var(--panel-2);
+    }
+
+    .menu-item.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .content-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: var(--bg);
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 800px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal h2 {
+      margin: 0 0 16px;
+      font-size: 18px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 12px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--editor);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .message {
+      padding: 10px 12px;
+      border-radius: 5px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .message.user {
+      background: var(--primary);
+      color: white;
+      align-self: flex-end;
+      max-width: 70%;
+    }
+
+    .message.assistant {
+      background: var(--panel-2);
+      color: var(--text);
+      align-self: flex-start;
+      max-width: 70%;
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input-area textarea {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--editor);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 12px;
+      resize: none;
+      max-height: 100px;
+    }
+
+    .chat-input-area textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .chat-send-btn {
+      padding: 10px 16px;
+      background: var(--primary);
+      color: white;
+      border: 0;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      align-self: flex-end;
+    }
+
+    .chat-send-btn:hover {
+      background: #79c0ff;
+    }
+
+    .config-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .form-group input,
+    .form-group textarea {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--editor);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 12px;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    @media (max-width: 900px) {
+      .menu-section {
+        width: 200px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .main {
+        flex-direction: column;
+      }
+
+      .menu-section {
+        width: 100%;
+        height: 120px;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .menu-list {
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+      }
+
+      .menu-item {
+        flex-shrink: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span>◆</span>
+        <span>Playground Pro</span>
+      </div>
+      <div class="toolbar">
+        <button id="configBtn" class="btn">⚙️ Config</button>
+        <button id="themeBtn" class="btn">☾ Tema</button>
+      </div>
+    </header>
+
+    <div id="status" class="status"></div>
+
+    <main class="main">
+      <aside class="menu-section">
+        <div class="menu-header">Menu</div>
+        <div class="menu-list">
+          <div class="menu-item active" onclick="abrirPagina('inicio')">
+            🏠 Início
+          </div>
+          <div class="menu-item" onclick="abrirPagina('editor')">
+            ✏️ Editor
+          </div>
+          <div class="menu-item" onclick="abrirPagina('chat')">
+            💬 Chat IA
+          </div>
+          <div class="menu-item" onclick="abrirPagina('projetos')">
+            📁 Projetos
+          </div>
+        </div>
+      </aside>
+
+      <section class="content-section">
+        <div class="content" id="content">
+          <h1>Bem-vindo ao Playground Pro! 🚀</h1>
+          <p>Selecione uma opção no menu para começar.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL CONFIG -->
+  <div class="modal-backdrop" id="configModal">
+    <div class="modal">
+      <h2>⚙️ Configuração</h2>
+
+      <div class="config-form">
+        <div class="form-group">
+          <label>URL do Supabase</label>
+          <input type="text" id="supabaseUrl" placeholder="https://xxxxx.supabase.co" />
+        </div>
+
+        <div class="form-group">
+          <label>Chave Pública do Supabase</label>
+          <input type="text" id="supabaseKey" placeholder="eyJhbGc..." />
+        </div>
+
+        <div class="form-group">
+          <label>Chave de IA (Claude)</label>
+          <input type="password" id="aiKey" placeholder="sk-..." />
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn" onclick="fecharConfig()">Cancelar</button>
+        <button class="btn primary" onclick="salvarConfig()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CHAT -->
+  <div class="modal-backdrop" id="chatModal">
+    <div class="modal">
+      <h2>💬 Chat com IA</h2>
+
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="chat-input-area">
+          <textarea id="chatInput" placeholder="Digite sua mensagem..." rows="3"></textarea>
+          <button class="chat-send-btn" onclick="enviarMensagem()">Enviar</button>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn" onclick="fecharChat()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function showStatus(message, type = 'info') {
+      const el = $('status');
+      el.textContent = message;
+      el.className = 'status ' + type;
+      setTimeout(() => {
+        el.textContent = '';
+        el.className = 'status';
+      }, 3000);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    }
+
+    function applyTheme() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+
+    let supabase = null;
+    let config = {
+      supabaseUrl: localStorage.getItem('supabaseUrl') || '',
+      supabaseKey: localStorage.getItem('supabaseKey') || '',
+      aiKey: localStorage.getItem('aiKey') || ''
+    };
+
+    function abrirConfig() {
+      $('supabaseUrl').value = config.supabaseUrl;
+      $('supabaseKey').value = config.supabaseKey;
+      $('aiKey').value = config.aiKey;
+      $('configModal').classList.add('open');
+    }
+
+    function fecharConfig() {
+      $('configModal').classList.remove('open');
+    }
+
+    function salvarConfig() {
+      config.supabaseUrl = $('supabaseUrl').value;
+      config.supabaseKey = $('supabaseKey').value;
+      config.aiKey = $('aiKey').value;
+
+      localStorage.setItem('supabaseUrl', config.supabaseUrl);
+      localStorage.setItem('supabaseKey', config.supabaseKey);
+      localStorage.setItem('aiKey', config.aiKey);
+
+      if (config.supabaseUrl && config.supabaseKey) {
+        supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+        showStatus('✅ Configuração salva!', 'success');
+      } else {
+        showStatus('❌ Preencha todos os campos!', 'error');
+        return;
+      }
+
+      fecharConfig();
+    }
+
+    function abrirPagina(pagina) {
+      const content = $('content');
+
+      document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+      event.target.closest('.menu-item').classList.add('active');
+
+      if (pagina === 'inicio') {
+        content.innerHTML = `
+          <h1>🚀 Bem-vindo ao Playground Pro!</h1>
+          <p>Este é um editor de código completo com:</p>
+          <ul>
+            <li>✏️ Editor de código com preview</li>
+            <li>💬 Chat com IA integrado</li>
+            <li>📁 Gerenciador de projetos</li>
+            <li>💾 Sincronização com Supabase</li>
+            <li>🌙 Tema claro/escuro</li>
+          </ul>
+          <p>Configure suas chaves no menu ⚙️ para começar!</p>
+        `;
+      } else if (pagina === 'editor') {
+        content.innerHTML = `
+          <h1>✏️ Editor de Código</h1>
+          <p>Em desenvolvimento...</p>
+        `;
+      } else if (pagina === 'chat') {
+        abrirChat();
+      } else if (pagina === 'projetos') {
+        content.innerHTML = `
+          <h1>📁 Meus Projetos</h1>
+          <p>Em desenvolvimento...</p>
+        `;
+      }
+    }
+
+    function abrirChat() {
+      $('chatModal').classList.add('open');
+      $('chatMessages').innerHTML = '';
+      $('chatInput').value = '';
+    }
+
+    function fecharChat() {
+      $('chatModal').classList.remove('open');
+    }
+
+    async function enviarMensagem() {
+      const input = $('chatInput');
+      const mensagem = input.value.trim();
+
+      if (!mensagem) return;
+
+      if (!config.aiKey) {
+        showStatus('❌ Configure a chave de IA primeiro!', 'error');
+        return;
+      }
+
+      const messagesEl = $('chatMessages');
+
+      const userMsg = document.createElement('div');
+      userMsg.className = 'message user';
+      userMsg.textContent = mensagem;
+      messagesEl.appendChild(userMsg);
+
+      input.value = '';
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+
+      try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': config.aiKey,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: 'claude-3-5-sonnet-20241022',
+            max_tokens: 1024,
+            messages: [
+              {
+                role: 'user',
+                content: mensagem
+              }
+            ]
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.content && data.content[0]) {
+          const assistantMsg = document.createElement('div');
+          assistantMsg.className = 'message assistant';
+          assistantMsg.textContent = data.content[0].text;
+          messagesEl.appendChild(assistantMsg);
+
+          if (supabase) {
+            await supabase.from('chat_messages').insert({
+              user_message: mensagem,
+              assistant_message: data.content[0].text,
+              created_at: new Date().toISOString()
+            });
+          }
+        }
+
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      } catch (error) {
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'message assistant';
+        errorMsg.textContent = '❌ Erro: ' + error.message;
+        messagesEl.appendChild(errorMsg);
+      }
+    }
+
+    $('configBtn').addEventListener('click', abrirConfig);
+    $('themeBtn').addEventListener('click', toggleTheme);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+
+      if (config.supabaseUrl && config.supabaseKey) {
+        supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.ctrlKey && $('chatModal').classList.contains('open')) {
+        enviarMensagem();
+      }
+    });
+  </script>
+</body>
+</html>
