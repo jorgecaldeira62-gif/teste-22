@@ -1,0 +1,185 @@
+sk-mini-editor/
+├── index.html                          ← ARQUIVO PRINCIPAL
+├── css/                                ← PASTA CSS (9 arquivos)
+│   ├── style.css
+│   ├── sidebar.css
+│   ├── editor.css
+│   ├── tabs.css
+│   ├── preview.css
+│   ├── buttons.css
+│   ├── responsive.css
+│   ├── theme-dark.css
+│   └── theme-light.css
+├── js/                                 ← PASTA JS (17 arquivos)
+│   ├── mini-utils.js
+│   ├── mini-validator.js
+│   ├── mini-storage.js
+│   ├── mini-vfs.js
+│   ├── mini-filetree.js
+│   ├── mini-tabs.js
+│   ├── mini-preview.js
+│   ├── mini-youtube.js
+│   ├── mini-import-export.js
+│   ├── mini-github.js
+│   ├── mini-theme.js
+│   ├── mini-syntax.js
+│   ├── mini-search.js
+│   ├── mini-shortcuts.js
+│   ├── mini-events.js
+│   ├── mini-editor.js
+│   └── mini-init.js
+└── lib/                                ← PASTA LIB (vazia - usa CDN)
+
+
+sk-mini-editor/
+├── index.html
+├── css/
+│   ├── style.css
+│   ├── sidebar.css
+│   ├── editor.css
+│   ├── tabs.css
+│   ├── preview.css
+│   ├── buttons.css
+│   ├── responsive.css
+│   ├── theme-dark.css
+│   └── theme-light.css
+└── js/
+    ├── mini-utils.js
+    ├── mini-validator.js
+    ├── mini-storage.js
+    ├── mini-vfs.js
+    ├── mini-filetree.js
+    ├── mini-tabs.js
+    ├── mini-preview.js
+    ├── mini-youtube.js
+    ├── mini-import-export.js
+    ├── mini-github.js
+    ├── mini-theme.js
+    ├── mini-syntax.js
+    ├── mini-search.js
+    ├── mini-shortcuts.js
+    ├── mini-events.js
+    ├── mini-editor.js
+    └── mini-init.js
+
+sk-mini-editor/
+├── index.html
+├── css/
+│   ├── style.css
+│   ├── responsive.css
+│   ├── theme-dark.css
+│   ├── theme-light.css
+│   ├── editor.css
+│   ├── sidebar.css
+│   ├── preview.css
+│   ├── tabs.css
+│   └── buttons.css
+├── js/
+│   ├── mini-vfs.js
+│   ├── mini-filetree.js
+│   ├── mini-tabs.js
+│   ├── mini-preview.js
+│   ├── mini-youtube.js
+│   ├── mini-import-export.js
+│   ├── mini-github.js
+│   ├── mini-theme.js
+│   ├── mini-editor.js
+│   ├── mini-events.js
+│   ├── mini-storage.js
+│   ├── mini-validator.js
+│   ├── mini-utils.js
+│   ├── mini-search.js
+│   ├── mini-syntax.js
+│   ├── mini-shortcuts.js
+│   └── mini-init.js
+└── lib/
+    └── (CDN - sem arquivos locais)
+
+sk-mini-editor/
+├── index.html
+├── css/
+│   ├── style.css
+│   └── responsive.css
+├── js/
+│   ├── mini-vfs.js
+│   ├── mini-filetree.js
+│   ├── mini-tabs.js
+│   ├── mini-preview.js
+│   ├── mini-youtube.js
+│   ├── mini-import-export.js
+│   ├── mini-github.js
+│   ├── mini-theme.js
+│   └── mini-editor.js
+└── README.md
+
+
+index.html
+    │
+    ├─ js/mini-vfs.js (base)
+    │   │
+    │   ├─ js/mini-filetree.js (usa VFS)
+    │   │   │
+    │   │   └─ js/mini-editor.js (usa FileTree)
+    │   │       │
+    │   │       ├─ js/mini-tabs.js
+    │   │       ├─ js/mini-preview.js
+    │   │       │   │
+    │   │       │   ├─ js/mini-youtube.js
+    │   │       │   └─ lib/highlight.js
+    │   │       │
+    │   │       ├─ js/mini-import-export.js
+    │   │       │   └─ lib/jszip.js
+    │   │       │
+    │   │       ├─ js/mini-github.js
+    │   │       │
+    │   │       └─ js/mini-theme.js
+    │   │
+    │   └─ lib/file-saver.js
+    │
+    ├─ css/style.css
+    ├─ css/theme-dark.css
+    └─ lib/font-awesome.css
+
+sk-mini-editor/
+├── index.html
+├── css/
+│   ├── style.css
+│   └── responsive.css
+├── js/
+│   ├── mini-vfs.js
+│   ├── mini-filetree.js
+│   ├── mini-tabs.js
+│   ├── mini-preview.js
+│   ├── mini-youtube.js
+│   ├── mini-import-export.js
+│   ├── mini-github.js
+│   ├── mini-theme.js
+│   └── mini-editor.js
+└── README.md
+
+index.html
+    │
+    ├─ js/mini-vfs.js (base)
+    │   │
+    │   ├─ js/mini-filetree.js (usa VFS)
+    │   │   │
+    │   │   └─ js/mini-editor.js (usa FileTree)
+    │   │       │
+    │   │       ├─ js/mini-tabs.js
+    │   │       ├─ js/mini-preview.js
+    │   │       │   │
+    │   │       │   ├─ js/mini-youtube.js
+    │   │       │   └─ lib/highlight.js
+    │   │       │
+    │   │       ├─ js/mini-import-export.js
+    │   │       │   └─ lib/jszip.js
+    │   │       │
+    │   │       ├─ js/mini-github.js
+    │   │       │
+    │   │       └─ js/mini-theme.js
+    │   │
+    │   └─ lib/file-saver.js
+    │
+    ├─ css/style.css
+    ├─ css/theme-dark.css
+    └─ lib/font-awesome.css
