@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SK Mini Editor - Sistema Completo</title>
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="css/tabs.css">
+    <link rel="stylesheet" href="css/preview.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    
+    <!-- Temas -->
+    <link id="theme-link" rel="stylesheet" href="css/theme-dark.css">
+    
+    <!-- Highlight.js para Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR ESQUERDA -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">SK Editor</h1>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="btn-icon" title="Alternar tema">🌙</button>
+                    <button id="menu-toggle" class="btn-icon" title="Menu">☰</button>
+                </div>
+            </div>
+
+            <!-- Barra de Busca -->
+            <div class="search-container">
+                <input type="text" id="search-files" class="search-input" placeholder="🔍 Buscar arquivos...">
+            </div>
+
+            <!-- Árvore de Arquivos -->
+            <div class="filetree-container">
+                <div class="filetree-header">
+                    <h3>Arquivos</h3>
+                    <button id="collapse-tree" class="btn-icon" title="Recolher">−</button>
+                </div>
+                <div id="file-tree" class="file-tree"></div>
+            </div>
+
+            <!-- Ações da Sidebar -->
+            <div class="sidebar-actions">
+                <button id="new-file-btn" class="btn btn-primary">+ Novo Arquivo</button>
+                <button id="new-folder-btn" class="btn btn-secondary">📁 Nova Pasta</button>
+                <button id="import-btn" class="btn btn-info">📥 Importar ZIP</button>
+                <button id="export-btn" class="btn btn-success">📤 Exportar ZIP</button>
+                <button id="github-btn" class="btn btn-github">🐙 GitHub</button>
+                <button id="clear-btn" class="btn btn-danger">🗑️ Limpar Tudo</button>
+            </div>
+
+            <!-- Rodapé da Sidebar -->
+            <div class="sidebar-footer">
+                <p>SK Editor v1.0</p>
+                <p id="file-count">0 arquivos</p>
+            </div>
+        </aside>
+
+        <!-- SEÇÃO EDITOR CENTRAL -->
+        <main class="editor-section">
+            <!-- Abas -->
+            <div class="tabs-wrapper">
+                <div id="tabs-container" class="tabs-container"></div>
+                <button id="close-all-tabs" class="btn-icon" title="Fechar todas">✕</button>
+            </div>
+
+            <!-- Editor de Texto -->
+            <div class="editor-wrapper">
+                <textarea id="editor" class="editor" placeholder="Selecione um arquivo para começar..."></textarea>
+                <div class="editor-status">
+                    <span id="line-count">Ln 1, Col 1</span>
+                    <span id="char-count">0 caracteres</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- SEÇÃO PREVIEW DIREITA -->
+        <aside class="preview-section">
+            <div class="preview-header">
+                <h3>Preview</h3>
+                <div class="preview-actions">
+                    <button id="refresh-preview" class="btn-icon" title="Atualizar">🔄</button>
+                    <button id="fullscreen-preview" class="btn-icon" title="Tela cheia">⛶</button>
+                </div>
+            </div>
+            <div id="preview" class="preview-content"></div>
+        </aside>
+    </div>
+
+    <!-- Input oculto para ZIP -->
+    <input type="file" id="zip-input" accept=".zip" style="display:none;">
+
+    <!-- CDN Bibliotecas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+    <!-- MÓDULOS JS (ORDEM IMPORTANTE!) -->
+    <script src="js/mini-utils.js"></script>
+    <script src="js/mini-validator.js"></script>
+    <script src="js/mini-storage.js"></script>
+    <script src="js/mini-vfs.js"></script>
+    <script src="js/mini-filetree.js"></script>
+    <script src="js/mini-tabs.js"></script>
+    <script src="js/mini-preview.js"></script>
+    <script src="js/mini-youtube.js"></script>
+    <script src="js/mini-import-export.js"></script>
+    <script src="js/mini-github.js"></script>
+    <script src="js/mini-theme.js"></script>
+    <script src="js/mini-syntax.js"></script>
+    <script src="js/mini-search.js"></script>
+    <script src="js/mini-shortcuts.js"></script>
+    <script src="js/mini-events.js"></script>
+    <script src="js/mini-editor.js"></script>
+    <script src="js/mini-init.js"></script>
+</body>
+</html>
