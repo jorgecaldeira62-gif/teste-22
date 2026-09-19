@@ -1,0 +1,33 @@
+mkdir sk-mini-editor
+cd sk-mini-editor
+mkdir css
+mkdir js
+mkdir lib
+echo. > index.html
+echo. > css/style.css
+echo. > css/sidebar.css
+echo. > css/editor.css
+echo. > css/tabs.css
+echo. > css/preview.css
+echo. > css/buttons.css
+echo. > css/responsive.css
+echo. > css/theme-dark.css
+echo. > css/theme-light.css
+echo. > js/mini-utils.js
+echo. > js/mini-validator.js
+echo. > js/mini-storage.js
+echo. > js/mini-vfs.js
+echo. > js/mini-filetree.js
+echo. > js/mini-tabs.js
+echo. > js/mini-preview.js
+echo. > js/mini-youtube.js
+echo. > js/mini-import-export.js
+echo. > js/mini-github.js
+echo. > js/mini-theme.js
+echo. > js/mini-syntax.js
+echo. > js/mini-search.js
+echo. > js/mini-shortcuts.js
+echo. > js/mini-events.js
+echo. > js/mini-editor.js
+echo. > js/mini-init.js
+dir /s
