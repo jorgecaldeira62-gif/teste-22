@@ -1,0 +1,388 @@
+class MiniEditor {
+  constructor() {
+    this.currentFile = null;
+    this.tabs = new Set();
+    this.setupElements();
+    this.setupFileTree();
+    this.setupEventListeners();
+    this.setupDragDrop();
+    
+    miniVFS.addFile('/index.html', '<!DOCTYPE html>\n<html>\n<head>\n  <title>Meu Site</title>\n</head>\n<body>\n  <h1>Olá, Mundo!</h1>\n</body>\n</html>');
+    miniVFS.addFile('/style.css', 'body {\n  font-family: Arial, sans-serif;\n  background: #f0f0f0;\n}');
+    miniVFS.addFile('/script.js', 'console.log("SK Mini Editor rodando!");');
+    
+    this.fileTree.render();
+  }
+
+  setupElements() {
+    this.codeEditor = document.getElementById('codeEditor');
+    this.previewFrame = document.getElementById('previewFrame');
+    this.previewImage = document.getElementById('previewImage');
+    this.previewText = document.getElementById('previewText');
+    this.editorTabs = document.getElementById('editorTabs');
+    this.importBtn = document.getElementById('importBtn');
+    this.exportBtn = document.getElementById('exportBtn');
+    this.githubBtn = document.getElementById('githubBtn');
+    this.importInput = document.getElementById('importInput');
+    this.newFileBtn = document.getElementById('newFileBtn');
+    this.projectName = document.getElementById('projectName');
+  }
+
+  setupFileTree() {
+    this.fileTree = new MiniFileTree('fileTree', miniVFS);
+    this.fileTree.onFileSelect = (path) => this.selectFile(path);
+    this.fileTree.onContextMenu = (path) => this.showContextMenu(path);
+  }
+
+  setupEventListeners() {
+    this.importBtn.addEventListener('click', () => this.importInput.click());
+    this.importInput.addEventListener('change', (e) => this.handleImport(e));
+    this.exportBtn.addEventListener('click', () => this.exportZip());
+    this.githubBtn.addEventListener('click', () => this.showGitHubPanel());
+    this.codeEditor.addEventListener('input', () => this.updateFile());
+    this.newFileBtn.addEventListener('click', () => this.createNewFile());
+  }
+
+  setupDragDrop() {
+    document.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      document.body.style.backgroundColor = 'rgba(88, 166, 255, 0.1)';
+    });
+    document.addEventListener('dragleave', () => {
+      document.body.style.backgroundColor = '';
+    });
+    document.addEventListener('drop', (e) => {
+      e.preventDefault();
+      document.body.style.backgroundColor = '';
+      this.handleDrop(e);
+    });
+  }
+
+  async handleImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const ext = file.name.split('.').pop().toLowerCase();
+    
+    if (ext === 'zip') {
+      await this.importZip(file);
+    } else {
+      const content = await file.text();
+      miniVFS.addFile('/' + file.name, content);
+    }
+    
+    this.fileTree.render();
+    alert(`✓ ${file.name} importado com sucesso!`);
+    event.target.value = '';
+  }
+
+  async importZip(file) {
+    try {
+      const zip = new JSZip();
+      const loaded = await zip.loadAsync(file);
+      
+      for (const [path, zipFile] of Object.entries(loaded.files)) {
+        if (!zipFile.dir) {
+          const content = await zipFile.async('text');
+          miniVFS.addFile('/' + path, content);
+        }
+      }
+    } catch (error) {
+      alert('Erro ao importar ZIP: ' + error.message);
+    }
+  }
+
+  handleDrop(event) {
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      this.importInput.files = files;
+      this.handleImport({ target: { files } });
+    }
+  }
+
+  selectFile(path) {
+    this.currentFile = path;
+    const file = miniVFS.getFile(path);
+    if (!file) return;
+    
+    this.addTab(path);
+    this.codeEditor.value = file.content;
+    this.updatePreview();
+  }
+
+  updateFile() {
+    if (!this.currentFile) return;
+    const content = this.codeEditor.value;
+    miniVFS.updateContent(this.currentFile, content);
+    this.updatePreview();
+  }
+
+  updatePreview() {
+    if (!this.currentFile) return;
+    const file = miniVFS.getFile(this.currentFile);
+    if (!file) return;
+    
+    this.previewFrame.style.display = 'none';
+    this.previewImage.style.display = 'none';
+    this.previewText.style.display = 'none';
+    
+    if (file.type === 'html') {
+      this.previewFrame.style.display = 'block';
+      this.previewFrame.srcDoc = file.content;
+    } else if (file.type === 'image') {
+      this.previewImage.style.display = 'flex';
+      const blob = new Blob([file.content], { type: 'image/*' });
+      const url = URL.createObjectURL(blob);
+      this.previewImage.innerHTML = `<img src="${url}" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+    } else {
+      this.previewText.style.display = 'block';
+      this.previewText.innerHTML = `<pre>${file.content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`;
+    }
+  }
+
+  createNewFile() {
+    const name = prompt('Nome do arquivo:');
+    if (!name) return;
+    miniVFS.addFile('/' + name, '');
+    this.fileTree.render();
+  }
+
+  addTab(path) {
+    this.tabs.add(path);
+    this.renderTabs();
+  }
+
+  renderTabs() {
+    this.editorTabs.innerHTML = Array.from(this.tabs).map(path => {
+      const file = miniVFS.getFile(path);
+      const isActive = path === this.currentFile;
+      return `
+        <div class="tab ${isActive ? 'active' : ''}">
+          <span class="tab-name" data-path="${path}">${file.name}</span>
+          <button class="tab-close" data-path="${path}"><i class="fas fa-times"></i></button>
+        </div>
+      `;
+    }).join('');
+    
+    this.editorTabs.querySelectorAll('.tab-name').forEach(el => {
+      el.addEventListener('click', () => this.selectFile(el.dataset.path));
+    });
+    
+    this.editorTabs.querySelectorAll('.tab-close').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.tabs.delete(btn.dataset.path);
+        if (this.currentFile === btn.dataset.path) {
+          this.currentFile = Array.from(this.tabs)[0] || null;
+        }
+        this.renderTabs();
+        if (this.currentFile) this.selectFile(this.currentFile);
+      });
+    });
+  }
+
+  showContextMenu(path) {
+    const file = miniVFS.getFile(path);
+    if (!file) return;
+    
+    const items = [
+      { label: 'Baixar', action: () => this.downloadFile(path), icon: 'download' },
+      { label: 'Duplicar', action: () => this.duplicateFile(path), icon: 'copy' },
+      { label: 'Deletar', action: () => this.deleteFile(path), icon: 'trash', danger: true },
+    ];
+    
+    this.showBottomSheet(file.name, items);
+  }
+
+  showBottomSheet(title, items) {
+    const sheet = document.createElement('div');
+    sheet.className = 'bottom-sheet';
+    sheet.innerHTML = `
+      <div class="sheet-overlay"></div>
+      <div class="sheet-content">
+        <div class="sheet-header">
+          <h3>${title}</h3>
+          <button><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sheet-items">
+          ${items.map(item => `
+            <button class="sheet-item ${item.danger ? 'danger' : ''}">
+              <i class="fas fa-${item.icon}"></i>
+              <span>${item.label}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(sheet);
+    
+    const close = () => sheet.remove();
+    sheet.querySelector('.sheet-overlay').addEventListener('click', close);
+    sheet.querySelector('.sheet-header button').addEventListener('click', close);
+    
+    sheet.querySelectorAll('.sheet-item').forEach((btn, i) => {
+      btn.addEventListener('click', () => {
+        items[i].action();
+        close();
+      });
+    });
+  }
+
+  downloadFile(path) {
+    const file = miniVFS.getFile(path);
+    if (!file) return;
+    const blob = new Blob([file.content], { type: 'text/plain' });
+    saveAs(blob, file.name);
+  }
+
+  duplicateFile(path) {
+    const file = miniVFS.getFile(path);
+    if (!file) return;
+    const newPath = path.replace(/(\.[^.]*)?$/, '_copy$1');
+    miniVFS.addFile(newPath, file.content);
+    this.fileTree.render();
+  }
+
+  deleteFile(path) {
+    if (!confirm('Deletar arquivo?')) return;
+    miniVFS.deleteFile(path);
+    this.tabs.delete(path);
+    if (this.currentFile === path) {
+      this.currentFile = Array.from(this.tabs)[0] || null;
+    }
+    this.fileTree.render();
+    this.renderTabs();
+    if (this.currentFile) this.selectFile(this.currentFile);
+  }
+
+  exportZip() {
+    try {
+      const zip = new JSZip();
+      
+      for (const [path, file] of Object.entries(miniVFS.files)) {
+        const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+        zip.file(cleanPath, file.content, { binary: false });
+      }
+      
+      zip.generateAsync({ type: 'blob' }).then(blob => {
+        const projectName = this.projectName.value || 'Meu Projeto';
+        saveAs(blob, `${projectName}.zip`);
+      });
+    } catch (error) {
+      alert('Erro ao exportar: ' + error.message);
+    }
+  }
+
+  showGitHubPanel() {
+    const panel = document.createElement('div');
+    panel.className = 'bottom-sheet';
+    panel.innerHTML = `
+      <div class="sheet-overlay"></div>
+      <div class="sheet-content">
+        <div class="sheet-header">
+          <h3>GitHub</h3>
+          <button><i class="fas fa-times"></i></button>
+        </div>
+        <div id="githubContent" class="sheet-items" style="padding: 1rem; display: flex; flex-direction: column; gap: 1rem;"></div>
+      </div>
+    `;
+    
+    document.body.appendChild(panel);
+    
+    const close = () => panel.remove();
+    panel.querySelector('.sheet-overlay').addEventListener('click', close);
+    panel.querySelector('.sheet-header button').addEventListener('click', close);
+    
+    this.loadGitHubContent(panel);
+  }
+
+  loadGitHubContent(panel) {
+    const content = panel.querySelector('#githubContent');
+    
+    if (!miniGitHub.isAuthenticated()) {
+      content.innerHTML = `
+        <input 
+          type="password" 
+          id="tokenInput" 
+          placeholder="Cole seu token aqui..." 
+          style="padding: 0.75rem; background: #0d1117; border: 1px solid #30363d; border-radius: 0.375rem; color: #c9d1d9;"
+        >
+        <button id="connectBtn" style="padding: 0.75rem; background: #1f6feb; border: none; border-radius: 0.375rem; color: white; cursor: pointer; font-weight: 600;">
+          Conectar
+        </button>
+      `;
+      
+      document.getElementById('connectBtn').addEventListener('click', async () => {
+        const token = document.getElementById('tokenInput').value;
+        if (!token) {
+          alert('Cole o token!');
+          return;
+        }
+        
+        const result = await miniGitHub.connect(token);
+        if (result.success) {
+          alert(`✓ Conectado como @${result.username}`);
+          this.loadGitHubContent(panel);
+        } else {
+          alert(`❌ Erro: ${result.error}`);
+        }
+      });
+    } else {
+      content.innerHTML = `
+        <p style="color: #8b949e;">Conectado: <strong>@${miniGitHub.username}</strong></p>
+        <input 
+          type="text" 
+          id="repoInput" 
+          placeholder="Nome do repositório" 
+          style="padding: 0.75rem; background: #0d1117; border: 1px solid #30363d; border-radius: 0.375rem; color: #c9d1d9;"
+        >
+        <input 
+          type="text" 
+          id="messageInput" 
+          placeholder="Mensagem do commit" 
+          value="Atualizado pelo SK Editor"
+          style="padding: 0.75rem; background: #0d1117; border: 1px solid #30363d; border-radius: 0.375rem; color: #c9d1d9;"
+        >
+        <button id="pushBtn" style="padding: 0.75rem; background: #238636; border: none; border-radius: 0.375rem; color: white; cursor: pointer; font-weight: 600;">
+          Enviar para GitHub
+        </button>
+        <button id="disconnectBtn" style="padding: 0.75rem; background: #da3633; border: none; border-radius: 0.375rem; color: white; cursor: pointer; font-weight: 600;">
+          Desconectar
+        </button>
+      `;
+      
+      document.getElementById('pushBtn').addEventListener('click', async () => {
+        const repo = document.getElementById('repoInput').value.trim();
+        const message = document.getElementById('messageInput').value.trim();
+        
+        if (!repo) {
+          alert('Digite o nome do repositório!');
+          return;
+        }
+        
+        try {
+          const files = {};
+          for (const file of miniVFS.getAllFiles()) {
+            files[file.path] = file.content;
+          }
+          
+          const result = await miniGitHub.pushFiles(repo, files, message);
+          alert(`✓ ${result.success} arquivo(s) enviado(s)!\n❌ ${result.failed} erro(s)`);
+        } catch (error) {
+          alert(`Erro: ${error.message}`);
+        }
+      });
+      
+      document.getElementById('disconnectBtn').addEventListener('click', () => {
+        miniGitHub.disconnect();
+        alert('Desconectado do GitHub');
+        this.loadGitHubContent(panel);
+      });
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.miniEditor = new MiniEditor();
+});
