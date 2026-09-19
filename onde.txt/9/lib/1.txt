@@ -1,0 +1,12 @@
+// Você precisa criar este arquivo com:
+export interface GitHubCredentials {
+  token: string;
+  username: string;
+}
+
+export function loadGitHubCredentials(): GitHubCredentials
+export function saveGitHubCredentials(creds: GitHubCredentials): void
+export function listRepos(creds: GitHubCredentials): Promise<any[]>
+export function cloneRepo(creds: GitHubCredentials, owner: string, repo: string): Promise<Record<string, string>>
+export function pushAllFiles(creds: GitHubCredentials, owner: string, repo: string, files: Record<string, string>, msg: string): Promise<{success: number}>
+export function createRepo(creds: GitHubCredentials, name: string, desc: string, isPrivate: boolean): Promise<void>
