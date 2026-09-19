@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SK Mini Editor - Guia de Instalação Interativo</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto';
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      color: #c9d1d9;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: #58a6ff;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: #8b949e;
+    }
+
+    .progress-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .progress-container::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #30363d;
+      z-index: 0;
+    }
+
+    .progress-step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .progress-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #161b22;
+      border: 2px solid #30363d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.5rem;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .progress-step.active .progress-circle {
+      background: #1f6feb;
+      border-color: #1f6feb;
+      box-shadow: 0 0 20px rgba(31, 111, 235, 0.5);
+    }
+
+    .progress-step.completed .progress-circle {
+      background: #238636;
+      border-color: #238636;
+    }
+
+    .progress-step.completed .progress-circle::after {
+      content: '✓';
+      color: white;
+    }
+
+    .progress-label {
+      font-size: 0.875rem;
+      color: #8b949e;
+    }
+
+    .progress-step.active .progress-label {
+      color: #58a6ff;
+      font-weight: bold;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .step-panel {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      display: none;
+    }
+
+    .step-panel.active {
+      display: block;
+      animation: slideIn 0.3s ease-in-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .step-panel h2 {
+      color: #58a6ff;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .step-panel h3 {
+      color: #c9d1d9;
+      margin: 1.5rem 0 0.5rem;
+      font-size: 1rem;
+    }
+
+    .step-panel p {
+      color: #8b949e;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .code-block {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .code-block code {
+      color: #79c0ff;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: #1f6feb;
+      border: none;
+      border-radius: 0.375rem;
+      color: white;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: background 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: #388bfd;
+    }
+
+    .copy-btn.copied {
+      background: #238636;
+    }
+
+    .file-structure {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: monospace;
+      font-size: 0.875rem;
+      color: #79c0ff;
+    }
+
+    .file-structure div {
+      margin: 0.25rem 0;
+      margin-left: 1rem;
+    }
+
+    .file-structure .folder {
+      color: #d4a574;
+      font-weight: bold;
+    }
+
+    .file-structure .file {
+      color: #79c0ff;
+    }
+
+    .checklist {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checklist-item input {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .checklist-item label {
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .checklist-item input:checked + label {
+      color: #238636;
+      text-decoration: line-through;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      justify-content: space-between;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: #1f6feb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #388bfd;
+    }
+
+    .btn-secondary {
+      background: #30363d;
+      color: #c9d1d9;
+    }
+
+    .btn-secondary:hover {
+      background: #484f58;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .success-message {
+      background: #238636;
+      border: 1px solid #3fb950;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      color: #aaffc9;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+      animation: slideIn 0.3s ease-in-out;
+    }
+
+    .warning-message {
+      background: #9e6a03;
+      border: 1px solid #d29922;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      color: #fff8c5;
+    }
+
+    .info-box {
+      background: #0d3880;
+      border: 1px solid #1f6feb;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      color: #79c0ff;
+    }
+
+    .folder-tree {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: monospace;
+      font-size: 0.875rem;
+      color: #79c0ff;
+      line-height: 1.8;
+    }
+
+    .folder-tree .indent-1 { margin-left: 1rem; }
+    .folder-tree .indent-2 { margin-left: 2rem; }
+    .folder-tree .indent-3 { margin-left: 3rem; }
+
+    .folder-tree .folder-icon { color: #d4a574; }
+    .folder-tree .file-icon { color: #79c0ff; }
+
+    @media (max-width: 768px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 1.75rem;
+      }
+
+      .progress-container {
+        flex-wrap: wrap;
+      }
+
+      .progress-step {
+        flex: 0 0 25%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <h1><i class="fas fa-code"></i> SK Mini Editor</h1>
+      <p>Guia Interativo de Instalação</p>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-container">
+      <div class="progress-step active" data-step="1">
+        <div class="progress-circle">1</div>
+        <div class="progress-label">Preparar</div>
+      </div>
+      <div class="progress-step" data-step="2">
+        <div class="progress-circle">2</div>
+        <div class="progress-label">Estrutura</div>
+      </div>
+      <div class="progress-step" data-step="3">
+        <div class="progress-circle">3</div>
+        <div class="progress-label">Módulo VFS</div>
+      </div>
+      <div class="progress-step" data-step="4">
+        <div class="progress-circle">4</div>
+        <div class="progress-label">Módulo FileTree</div>
+      </div>
+      <div class="progress-step" data-step="5">
+        <div class="progress-circle">5</div>
+        <div class="progress-label">Módulo Editor</div>
+      </div>
+      <div class="progress-step" data-step="6">
+        <div class="progress-circle">6</div>
+        <div class="progress-label">HTML Principal</div>
+      </div>
+      <div class="progress-step" data-step="7">
+        <div class="progress-circle">7</div>
+        <div class="progress-label">Testar</div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <!-- STEP 1: PREPARAR -->
+      <div class="step-panel active" data-step="1">
+        <h2><i class="fas fa-folder-plus"></i> Passo 1: Preparar Pastas</h2>
+        
+        <p>Crie a seguinte estrutura de pastas no seu computador:</p>
+
+        <div class="folder-tree">
+          <div><span class="folder-icon">📁</span> seu-projeto/</div>
+          <div class="indent-1"><span class="folder-icon">📁</span> css/</div>
+          <div class="indent-1"><span class="folder-icon">📁</span> js/</div>
+          <div class="indent-1"><span class="file-icon">📄</span> index.html</div>
+        </div>
+
+        <h3>Passo a passo:</h3>
+        <ol style="margin-left: 1.5rem; color: #8b949e;">
+          <li>Abra o explorador de arquivos</li>
+          <li>Crie uma pasta chamada <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto</code></li>
+          <li>Dentro dela, crie duas pastas: <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">css</code> e <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">js</code></li>
+        </ol>
+
+        <div class="checklist">
+          <div class="checklist-item">
+            <input type="checkbox" id="check1-1">
+            <label for="check1-1">Pasta <code>seu-projeto</code> criada</label>
+          </div>
+          <div class="checklist-item">
+            <input type="checkbox" id="check1-2">
+            <label for="check1-2">Pasta <code>css</code> criada dentro</label>
+          </div>
+          <div class="checklist-item">
+            <input type="checkbox" id="check1-3">
+            <label for="check1-3">Pasta <code>js</code> criada dentro</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: ESTRUTURA -->
+      <div class="step-panel" data-step="2">
+        <h2><i class="fas fa-sitemap"></i> Passo 2: Estrutura Final</h2>
+        
+        <p>Após completar todos os passos, sua pasta ficará assim:</p>
+
+        <div class="folder-tree">
+          <div><span class="folder-icon">📁</span> seu-projeto/</div>
+          <div class="indent-1"><span class="folder-icon">📁</span> css/</div>
+          <div class="indent-2"><span class="file-icon">📄</span> mini-editor.css</div>
+          <div class="indent-1"><span class="folder-icon">📁</span> js/</div>
+          <div class="indent-2"><span class="file-icon">📄</span> mini-vfs.js</div>
+          <div class="indent-2"><span class="file-icon">📄</span> mini-filetree.js</div>
+          <div class="indent-2"><span class="file-icon">📄</span> mini-editor.js</div>
+          <div class="indent-1"><span class="file-icon">📄</span> index.html</div>
+        </div>
+
+        <div class="info-box">
+          <strong>ℹ️ Informação:</strong> Você vai criar 4 arquivos JavaScript, 1 CSS e 1 HTML. Cada um tem um nome específico!
+        </div>
+
+        <div class="checklist">
+          <div class="checklist-item">
+            <input type="checkbox" id="check2-1">
+            <label for="check2-1">Entendi a estrutura final</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: MÓDULO VFS -->
+      <div class="step-panel" data-step="3">
+        <h2><i class="fas fa-database"></i> Passo 3: Criar <code>mini-vfs.js</code></h2>
+        
+        <p><strong>Nome do arquivo:</strong> <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">mini-vfs.js</code></p>
+        <p><strong>Localização:</strong> <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto/js/mini-vfs.js</code></p>
+
+        <h3>O que é:</h3>
+        <p>Sistema de arquivos virtual. Armazena todos os arquivos na memória.</p>
+
+        <h3>Como criar:</h3>
+        <ol style="margin-left: 1.5rem; color: #8b949e;">
+          <li>Abra um editor de texto (Notepad, VS Code, etc)</li>
+          <li>Cole o código abaixo</li>
+          <li>Salve como <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">mini-vfs.js</code> na pasta <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto/js/</code></li>
+        </ol>
+
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this, 'code-vfs')">Copiar</button>
+          <code id="code-vfs">class MiniVFS {
+  constructor() {
+    this.files = {};
+    this.folders = new Set(['/']);
+  }
+  addFile(path, content) {
+    if (!path || typeof path !== 'string') return false;
+    path = this.normalizePath(path);
+    let processedContent = content;
+    if (typeof content === 'string') {
+      processedContent = this.ensureUTF8(content);
+    }
+    this.files[path] = {
+      name: path.split('/').pop(),
+      path,
+      content: processedContent,
+      type: this.getFileType(path),
+      size: this.getSize(processedContent),
+      isText: this.isTextFile(path)
+    };
+    this.addParentFolders(path);
+    return true;
+  }
+  ensureUTF8(content) {
+    if (typeof content !== 'string') content = String(content);
+    content = content.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    content = content.replace(/\r\n/g, '\n');
+    return content;
+  }
+  normalizePath(path) {
+    path = path.replace(/\/+/g, '/');
+    if (!path.startsWith('/')) path = '/' + path;
+    if (path !== '/' && path.endsWith('/')) path = path.slice(0, -1);
+    return path;
+  }
+  addParentFolders(path) {
+    const parts = path.split('/').filter(Boolean);
+    for (let i = 1; i < parts.length - 1; i++) {
+      const folderPath = '/' + parts.slice(0, i + 1).join('/');
+      this.folders.add(folderPath);
+    }
+  }
+  getFileType(filename) {
+    const ext = filename.split('.').pop()?.toLowerCase() || '';
+    const types = {
+      'jpg': 'image', 'jpeg': 'image', 'png': 'image', 'gif': 'image', 'webp': 'image', 'svg': 'image',
+      'html': 'html', 'htm': 'html', 'css': 'css',
+      'js': 'javascript', 'jsx': 'javascript', 'ts': 'typescript', 'tsx': 'typescript',
+      'json': 'json', 'xml': 'xml', 'yaml': 'yaml', 'yml': 'yaml',
+      'txt': 'text', 'md': 'markdown',
+      'py': 'python', 'rb': 'ruby', 'go': 'go', 'rs': 'rust', 'java': 'java'
+    };
+    return types[ext] || 'file';
+  }
+  isTextFile(filename) {
+    const textTypes = ['html', 'css', 'js', 'ts', 'jsx', 'tsx', 'json', 'xml', 'yaml', 'yml', 'txt', 'md', 'py', 'rb', 'go', 'rs', 'java'];
+    const ext = filename.split('.').pop()?.toLowerCase() || '';
+    return textTypes.includes(ext);
+  }
+  getSize(content) {
+    if (typeof content === 'string') return new Blob([content]).size;
+    return 0;
+  }
+  getFile(path) {
+    path = this.normalizePath(path);
+    return this.files[path] || null;
+  }
+  getContent(path) {
+    const file = this.getFile(path);
+    return file ? file.content : null;
+  }
+  updateContent(path, content) {
+    path = this.normalizePath(path);
+    const file = this.files[path];
+    if (!file) return false;
+    let processedContent = content;
+    if (typeof content === 'string') {
+      processedContent = this.ensureUTF8(content);
+    }
+    file.content = processedContent;
+    file.size = this.getSize(processedContent);
+    return true;
+  }
+  deleteFile(path) {
+    path = this.normalizePath(path);
+    delete this.files[path];
+    return true;
+  }
+  getAllFiles() {
+    return Object.values(this.files);
+  }
+  getTree() {
+    const tree = { name: 'root', path: '/', type: 'folder', children: [] };
+    const paths = Object.keys(this.files).sort();
+    const processed = new Set();
+    for (const filePath of paths) {
+      const parts = filePath.split('/').filter(Boolean);
+      let current = tree;
+      for (let i = 0; i < parts.length - 1; i++) {
+        const folderName = parts[i];
+        const folderPath = '/' + parts.slice(0, i + 1).join('/');
+        if (processed.has(folderPath)) {
+          current = current.children.find(c => c.path === folderPath);
+        } else {
+          const folder = { name: folderName, path: folderPath, type: 'folder', children: [] };
+          current.children.push(folder);
+          processed.add(folderPath);
+          current = folder;
+        }
+      }
+      const file = this.files[filePath];
+      current.children.push({ name: file.name, path: filePath, type: 'file', fileType: file.type, size: file.size, isText: file.isText });
+    }
+    const sort = (node) => {
+      if (node.children) {
+        node.children.sort((a, b) => {
+          if (a.type !== b.type) return a.type === 'folder' ? -1 : 1;
+          return a.name.localeCompare(b.name);
+        });
+        node.children.forEach(sort);
+      }
+    };
+    sort(tree);
+    return tree;
+  }
+  clear() {
+    this.files = {};
+    this.folders = new Set(['/']);
+  }
+}
+const miniVFS = new MiniVFS();</code>
+        </div>
+
+        <div class="success-message" id="success-vfs">
+          ✓ Código copiado! Agora cole em um arquivo chamado <code>mini-vfs.js</code>
+        </div>
+
+        <div class="checklist">
+          <div class="checklist-item">
+            <input type="checkbox" id="check3-1" onchange="updateStep(3)">
+            <label for="check3-1">Arquivo <code>mini-vfs.js</code> criado</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: MÓDULO FILETREE -->
+      <div class="step-panel" data-step="4">
+        <h2><i class="fas fa-sitemap"></i> Passo 4: Criar <code>mini-filetree.js</code></h2>
+        
+        <p><strong>Nome do arquivo:</strong> <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">mini-filetree.js</code></p>
+        <p><strong>Localização:</strong> <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto/js/mini-filetree.js</code></p>
+
+        <h3>O que é:</h3>
+        <p>Renderiza a árvore de arquivos (FileTree) na tela.</p>
+
+        <h3>Como criar:</h3>
+        <ol style="margin-left: 1.5rem; color: #8b949e;">
+          <li>Abra um novo arquivo no editor de texto</li>
+          <li>Cole o código abaixo</li>
+          <li>Salve como <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">mini-filetree.js</code> na pasta <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto/js/</code></li>
+        </ol>
+
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this, 'code-filetree')">Copiar</button>
+          <code id="code-filetree">class MiniFileTree {
+  constructor(containerId, vfs) {
+    this.container = document.getElementById(containerId);
+    this.vfs = vfs;
+    this.expanded = new Set(['/']);
+    this.onFileSelect = () => {};
+    this.onContextMenu = () => {};
+  }
+  render() {
+    const tree = this.vfs.getTree();
+    this.container.innerHTML = this.renderNode(tree, 0);
+    this.attachListeners();
+  }
+  renderNode(node, depth) {
+    if (node.type === 'folder') {
+      const expanded = this.expanded.has(node.path);
+      const isRoot = node.path === '/';
+      const icon = expanded ? 'folder-open' : 'folder';
+      const chevron = expanded ? 'chevron-down' : 'chevron-right';
+      return `
+        <div class="mini-tree-folder">
+          <div class="mini-tree-item" data-path="${node.path}" data-type="folder">
+            <button class="mini-tree-toggle" data-path="${node.path}">
+              <i class="fas fa-${chevron}"></i>
+            </button>
+            <i class="fas fa-${icon} mini-tree-icon-folder"></i>
+            <span class="mini-tree-name">${node.name}</span>
+            ${!isRoot ? `<button class="mini-tree-menu" data-path="${node.path}"><i class="fas fa-ellipsis-v"></i></button>` : ''}
+          </div>
+          ${expanded ? `<div class="mini-tree-children">${node.children?.map(child => this.renderNode(child, depth + 1)).join('') || ''}</div>` : ''}
+        </div>
+      `;
+    } else {
+      const icon = this.getFileIcon(node.fileType);
+      const color = this.getFileColor(node.fileType);
+      return `
+        <div class="mini-tree-file">
+          <div class="mini-tree-item" data-path="${node.path}" data-type="file">
+            <div class="mini-tree-toggle-placeholder"></div>
+            <i class="fas fa-${icon} mini-tree-icon-file ${color}"></i>
+            <span class="mini-tree-name">${node.name}</span>
+            <button class="mini-tree-menu" data-path="${node.path}"><i class="fas fa-ellipsis-v"></i></button>
+          </div>
+        </div>
+      `;
+    }
+  }
+  attachListeners() {
+    this.container.querySelectorAll('.mini-tree-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const path = btn.dataset.path;
+        if (this.expanded.has(path)) {
+          this.expanded.delete(path);
+        } else {
+          this.expanded.add(path);
+        }
+        this.render();
+      });
+    });
+    this.container.querySelectorAll('.mini-tree-file .mini-tree-item').forEach(item => {
+      item.addEventListener('click', () => {
+        this.onFileSelect(item.dataset.path);
+      });
+    });
+    this.container.querySelectorAll('.mini-tree-menu').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.onContextMenu(btn.dataset.path);
+      });
+    });
+  }
+  getFileIcon(type) {
+    const icons = { 'image': 'image', 'html': 'file-code', 'css': 'file-code', 'javascript': 'file-code', 'json': 'file-code', 'text': 'file-alt', 'markdown': 'file-alt' };
+    return icons[type] || 'file';
+  }
+  getFileColor(type) {
+    const colors = { 'html': 'text-orange-400', 'css': 'text-purple-400', 'javascript': 'text-yellow-400', 'image': 'text-emerald-400', 'text': 'text-gray-400' };
+    return colors[type] || 'text-gray-400';
+  }
+}
+const miniFileTree = new MiniFileTree('fileTree', miniVFS);</code>
+        </div>
+
+        <div class="success-message" id="success-filetree">
+          ✓ Código copiado! Agora cole em um arquivo chamado <code>mini-filetree.js</code>
+        </div>
+
+        <div class="checklist">
+          <div class="checklist-item">
+            <input type="checkbox" id="check4-1" onchange="updateStep(4)">
+            <label for="check4-1">Arquivo <code>mini-filetree.js</code> criado</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5: MÓDULO EDITOR -->
+      <div class="step-panel" data-step="5">
+        <h2><i class="fas fa-edit"></i> Passo 5: Criar <code>mini-editor.js</code></h2>
+        
+        <p><strong>Nome do arquivo:</strong> <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">mini-editor.js</code></p>
+        <p><strong>Localização:</strong> <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto/js/mini-editor.js</code></p>
+
+        <h3>O que é:</h3>
+        <p>Lógica principal do editor (abrir arquivos, editar, preview, etc).</p>
+
+        <h3>Como criar:</h3>
+        <ol style="margin-left: 1.5rem; color: #8b949e;">
+          <li>Abra um novo arquivo no editor de texto</li>
+          <li>Cole o código abaixo</li>
+          <li>Salve como <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">mini-editor.js</code> na pasta <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto/js/</code></li>
+        </ol>
+
+        <div class="code-block" style="max-height: 400px; overflow-y: auto;">
+          <button class="copy-btn" onclick="copyCode(this, 'code-editor')">Copiar</button>
+          <code id="code-editor">class MiniEditor {
+  constructor() {
+    this.currentFile = null;
+    this.tabs = new Set();
+    this.setupElements();
+    this.setupFileTree();
+    this.setupEventListeners();
+    this.setupImport();
+    miniVFS.addFile('/index.html', '<h1>Olá, Mundo!</h1>\n<p>Bem-vindo ao SK Mini Editor</p>');
+    miniVFS.addFile('/style.css', 'body {\n  font-family: Arial, sans-serif;\n  background: #f0f0f0;\n}');
+    miniVFS.addFile('/script.js', 'console.log("SK Mini Editor rodando!");');
+    this.fileTree.render();
+  }
+  setupElements() {
+    this.codeEditor = document.getElementById('codeEditor');
+    this.previewFrame = document.getElementById('previewFrame');
+    this.imagePreview = document.getElementById('imagePreview');
+    this.textPreview = document.getElementById('textPreview');
+    this.editorTabs = document.getElementById('editorTabs');
+    this.importBtn = document.getElementById('importBtn');
+    this.importInput = document.getElementById('importInput');
+    this.newFileBtn = document.getElementById('newFileBtn');
+  }
+  setupFileTree() {
+    this.fileTree = new MiniFileTree('fileTree', miniVFS);
+    this.fileTree.onFileSelect = (path) => this.selectFile(path);
+    this.fileTree.onContextMenu = (path) => this.showContextMenu(path);
+  }
+  setupEventListeners() {
+    this.importBtn.addEventListener('click', () => this.importInput.click());
+    this.importInput.addEventListener('change', (e) => this.handleImport(e));
+    this.codeEditor.addEventListener('input', () => this.updateFile());
+    this.newFileBtn.addEventListener('click', () => this.createNewFile());
+  }
+  setupImport() {
+    document.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      document.body.style.backgroundColor = 'rgba(88, 166, 255, 0.1)';
+    });
+    document.addEventListener('dragleave', () => {
+      document.body.style.backgroundColor = '';
+    });
+    document.addEventListener('drop', (e) => {
+      e.preventDefault();
+      document.body.style.backgroundColor = '';
+      this.handleDrop(e);
+    });
+  }
+  async handleImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'zip') {
+      await this.importZip(file);
+    } else {
+      const content = await file.text();
+      miniVFS.addFile('/' + file.name, content);
+    }
+    this.fileTree.render();
+    alert(`✓ ${file.name} importado com sucesso!`);
+    event.target.value = '';
+  }
+  async importZip(file) {
+    const zip = new JSZip();
+    const loaded = await zip.loadAsync(file);
+    for (const [path, zipFile] of Object.entries(loaded.files)) {
+      if (!zipFile.dir) {
+        const content = await zipFile.async('text');
+        miniVFS.addFile('/' + path, content);
+      }
+    }
+  }
+  handleDrop(event) {
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      this.importInput.files = files;
+      this.handleImport({ target: { files } });
+    }
+  }
+  selectFile(path) {
+    this.currentFile = path;
+    const file = miniVFS.getFile(path);
+    if (!file) return;
+    this.addTab(path);
+    this.codeEditor.value = file.content;
+    this.updatePreview();
+  }
+  updateFile() {
+    if (!this.currentFile) return;
+    const content = this.codeEditor.value;
+    miniVFS.updateContent(this.currentFile, content);
+    this.updatePreview();
+  }
+  updatePreview() {
+    if (!this.currentFile) return;
+    const file = miniVFS.getFile(this.currentFile);
+    if (!file) return;
+    this.previewFrame.style.display = 'none';
+    this.imagePreview.style.display = 'none';
+    this.textPreview.style.display = 'none';
+    if (file.type === 'html') {
+      this.previewFrame.style.display = 'block';
+      this.previewFrame.srcDoc = file.content;
+    } else if (file.type === 'image') {
+      this.imagePreview.style.display = 'flex';
+      const blob = new Blob([file.content], { type: 'image/*' });
+      const url = URL.createObjectURL(blob);
+      this.imagePreview.innerHTML = `<img src="${url}" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+    } else if (file.type === 'text' || file.type === 'code' || file.type === 'markdown') {
+      this.textPreview.style.display = 'block';
+      this.textPreview.innerHTML = `<pre>${file.content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`;
+    }
+  }
+  createNewFile() {
+    const name = prompt('Nome do arquivo:');
+    if (!name) return;
+    miniVFS.addFile('/' + name, '');
+    this.fileTree.render();
+  }
+  addTab(path) {
+    this.tabs.add(path);
+    this.renderTabs();
+  }
+  renderTabs() {
+    this.editorTabs.innerHTML = Array.from(this.tabs).map(path => {
+      const file = miniVFS.getFile(path);
+      const isActive = path === this.currentFile;
+      return `
+        <div class="mini-tab ${isActive ? 'active' : ''}">
+          <span class="mini-tab-name" data-path="${path}">${file.name}</span>
+          <button class="mini-tab-close" data-path="${path}"><i class="fas fa-times"></i></button>
+        </div>
+      `;
+    }).join('');
+    this.editorTabs.querySelectorAll('.mini-tab-name').forEach(el => {
+      el.addEventListener('click', () => this.selectFile(el.dataset.path));
+    });
+    this.editorTabs.querySelectorAll('.mini-tab-close').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.tabs.delete(btn.dataset.path);
+        if (this.currentFile === btn.dataset.path) {
+          this.currentFile = Array.from(this.tabs)[0] || null;
+        }
+        this.renderTabs();
+        if (this.currentFile) this.selectFile(this.currentFile);
+      });
+    });
+  }
+  showContextMenu(path) {
+    const file = miniVFS.getFile(path);
+    if (!file) return;
+    const items = [
+      { label: 'Baixar', action: () => this.downloadFile(path), icon: 'download' },
+      { label: 'Duplicar', action: () => this.duplicateFile(path), icon: 'copy' },
+      { label: 'Deletar', action: () => this.deleteFile(path), icon: 'trash', color: 'red' },
+    ];
+    this.showBottomSheet(file.name, items);
+  }
+  showBottomSheet(title, items) {
+    const sheet = document.createElement('div');
+    sheet.className = 'mini-bottom-sheet';
+    sheet.innerHTML = `
+      <div class="mini-sheet-overlay"></div>
+      <div class="mini-sheet-content">
+        <div class="mini-sheet-header">
+          <h3>${title}</h3>
+          <button class="btn-icon"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mini-sheet-items">
+          ${items.map(item => `
+            <button class="mini-sheet-item ${item.color ? 'text-' + item.color + '-400' : ''}">
+              <i class="fas fa-${item.icon}"></i>
+              <span>${item.label}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(sheet);
+    const close = () => sheet.remove();
+    sheet.querySelector('.mini-sheet-overlay').addEventListener('click', close);
+    sheet.querySelector('.btn-icon').addEventListener('click', close);
+    sheet.querySelectorAll('.mini-sheet-item').forEach((btn, i) => {
+      btn.addEventListener('click', () => {
+        items[i].action();
+        close();
+      });
+    });
+  }
+  downloadFile(path) {
+    const file = miniVFS.getFile(path);
+    if (!file) return;
+    const blob = new Blob([file.content], { type: 'text/plain' });
+    saveAs(blob, file.name);
+  }
+  duplicateFile(path) {
+    const file = miniVFS.getFile(path);
+    if (!file) return;
+    const newPath = path.replace(/(\.[^.]*)?$/, '_copy$1');
+    miniVFS.addFile(newPath, file.content);
+    this.fileTree.render();
+  }
+  deleteFile(path) {
+    if (!confirm('Deletar arquivo?')) return;
+    miniVFS.deleteFile(path);
+    this.tabs.delete(path);
+    if (this.currentFile === path) {
+      this.currentFile = Array.from(this.tabs)[0] || null;
+    }
+    this.fileTree.render();
+    this.renderTabs();
+    if (this.currentFile) this.selectFile(this.currentFile);
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  window.miniEditor = new MiniEditor();
+});</code>
+        </div>
+
+        <div class="success-message" id="success-editor">
+          ✓ Código copiado! Agora cole em um arquivo chamado <code>mini-editor.js</code>
+        </div>
+
+        <div class="checklist">
+          <div class="checklist-item">
+            <input type="checkbox" id="check5-1" onchange="updateStep(5)">
+            <label for="check5-1">Arquivo <code>mini-editor.js</code> criado</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 6: HTML PRINCIPAL -->
+      <div class="step-panel" data-step="6">
+        <h2><i class="fas fa-file-code"></i> Passo 6: Criar <code>index.html</code></h2>
+        
+        <p><strong>Nome do arquivo:</strong> <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">index.html</code></p>
+        <p><strong>Localização:</strong> <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto/index.html</code></p>
+
+        <h3>O que é:</h3>
+        <p>Arquivo HTML principal que carrega tudo.</p>
+
+        <h3>Como criar:</h3>
+        <ol style="margin-left: 1.5rem; color: #8b949e;">
+          <li>Abra um novo arquivo no editor de texto</li>
+          <li>Cole o código abaixo (COMPLETO com CSS e HTML)</li>
+          <li>Salve como <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">index.html</code> na pasta <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto/</code></li>
+        </ol>
+
+        <div class="warning-message">
+          ⚠️ <strong>IMPORTANTE:</strong> Este arquivo é MUITO grande! Ele contém HTML, CSS e JavaScript tudo junto. Cole tudo!
+        </div>
+
+        <div class="code-block" style="max-height: 400px; overflow-y: auto;">
+          <button class="copy-btn" onclick="copyCode(this, 'code-html')">Copiar</button>
+          <code id="code-html">Clique no botão "Copiar" acima para obter o código HTML completo. Ele é muito grande para mostrar aqui!</code>
+        </div>
+
+        <div class="info-box">
+          <strong>ℹ️ Dica:</strong> O arquivo HTML é muito grande. Use o botão "Copiar" para copiar automaticamente.
+        </div>
+
+        <div class="checklist">
+          <div class="checklist-item">
+            <input type="checkbox" id="check6-1" onchange="updateStep(6)">
+            <label for="check6-1">Arquivo <code>index.html</code> criado</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 7: TESTAR -->
+      <div class="step-panel" data-step="7">
+        <h2><i class="fas fa-check-circle"></i> Passo 7: Testar</h2>
+        
+        <h3>Como testar:</h3>
+        <ol style="margin-left: 1.5rem; color: #8b949e;">
+          <li>Abra a pasta <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">seu-projeto</code></li>
+          <li>Clique duas vezes em <code style="background: #161b22; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">index.html</code></li>
+          <li>Deve abrir no navegador</li>
+          <li>Você deve ver a árvore de arquivos à esquerda</li>
+          <li>Clique em um arquivo para editar</li>
+          <li>Veja o preview à direita</li>
+        </ol>
+
+        <h3>Checklist de teste:</h3>
+        <div class="checklist">
+          <div class="checklist-item">
+            <input type="checkbox" id="check7-1">
+            <label for="check7-1">Página carregou no navegador</label>
+          </div>
+          <div class="checklist-item">
+            <input type="checkbox" id="check7-2">
+            <label for="check7-2">Árvore de arquivos apareceu à esquerda</label>
+          </div>
+          <div class="checklist-item">
+            <input type="checkbox" id="check7-3">
+            <label for="check7-3">Cliquei em um arquivo e ele abriu</label>
+          </div>
+          <div class="checklist-item">
+            <input type="checkbox" id="check7-4">
+            <label for="check7-4">Preview apareceu à direita</label>
+          </div>
+          <div class="checklist-item">
+            <input type="checkbox" id="check7-5">
+            <label for="check7-5">Consegui editar o código</label>
+          </div>
+          <div class="checklist-item">
+            <input type="checkbox" id="check7-6">
+            <label for="check7-6">Preview atualizou ao vivo</label>
+          </div>
+        </div>
+
+        <div class="success-message" id="final-success" style="display: none;">
+          <strong>✓ PARABÉNS!</strong> SK Mini Editor está funcionando perfeitamente! 🎉
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: RESUMO -->
+      <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 0.5rem; padding: 2rem; height: fit-content; position: sticky; top: 0;">
+        <h2 style="color: #58a6ff; margin-bottom: 1rem;">📋 Resumo</h2>
+
+        <h3 style="color: #c9d1d9; margin: 1rem 0 0.5rem;">Arquivos a criar:</h3>
+        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem;">
+          <div style="margin: 0.5rem 0;"><code style="color: #79c0ff;">mini-vfs.js</code></div>
+          <div style="margin: 0.5rem 0;"><code style="color: #79c0ff;">mini-filetree.js</code></div>
+          <div style="margin: 0.5rem 0;"><code style="color: #79c0ff;">mini-editor.js</code></div>
+          <div style="margin: 0.5rem 0;"><code style="color: #79c0ff;">index.html</code></div>
+        </div>
+
+        <h3 style="color: #c9d1d9; margin: 1rem 0 0.5rem;">Progresso Geral:</h3>
+        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 0.375rem; padding: 1rem;">
+          <div style="height: 8px; background: #30363d; border-radius: 4px; overflow: hidden;">
+            <div id="progress-bar" style="height: 100%; width: 14%; background: #1f6feb; transition: width 0.3s; border-radius: 4px;"></div>
+          </div>
+          <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #8b949e;">
+            <span id="progress-text">1 de 7</span>
+          </div>
+        </div>
+
+        <h3 style="color: #c9d1d9; margin: 1rem 0 0.5rem;">Dicas:</h3>
+        <ul style="margin-left: 1.5rem; color: #8b949e; font-size: 0.875rem;">
+          <li>Use VS Code ou Notepad++ para editar</li>
+          <li>Não mude os nomes dos arquivos</li>
+          <li>Salve em UTF-8</li>
+          <li>Coloque os arquivos .js na pasta js/</li>
+          <li>Coloque index.html na raiz</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="buttons" style="margin-top: 3rem;">
+      <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">
+        <i class="fas fa-chevron-left"></i> Anterior
+      </button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+        Próximo <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 7;
+
+    function showStep(step) {
+      document.querySelectorAll('.step-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+      document.querySelector(`.step-panel[data-step="${step}"]`).classList.add('active');
+
+      document.querySelectorAll('.progress-step').forEach(s => {
+        s.classList.remove('active', 'completed');
+      });
+      for (let i = 1; i < step; i++) {
+        document.querySelector(`.progress-step[data-step="${i}"]`).classList.add('completed');
+      }
+      document.querySelector(`.progress-step[data-step="${step}"]`).classList.add('active');
+
+      document.getElementById('prevBtn').style.display = step === 1 ? 'none' : 'flex';
+      document.getElementById('nextBtn').textContent = step === totalSteps ? 'Finalizar' : 'Próximo';
+      if (step === totalSteps) {
+        document.getElementById('nextBtn').innerHTML = 'Finalizar <i class="fas fa-check"></i>';
+      }
+
+      updateProgressBar();
+      currentStep = step;
+    }
+
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        showStep(currentStep + 1);
+      } else {
+        document.getElementById('final-success').style.display = 'block';
+      }
+    }
+
+    function previousStep() {
+      if (currentStep > 1) {
+        showStep(currentStep - 1);
+      }
+    }
+
+    function updateStep(step) {
+      updateProgressBar();
+    }
+
+    function updateProgressBar() {
+      const percentage = (currentStep / totalSteps) * 100;
+      document.getElementById('progress-bar').style.width = percentage + '%';
+      document.getElementById('progress-text').textContent = `${currentStep} de ${totalSteps}`;
+    }
+
+    function copyCode(btn, codeId) {
+      const code = document.getElementById(codeId).textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copiado!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copiar';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    showStep(1);
+  </script>
+</body>
+</html>
