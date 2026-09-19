@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SK Mini Editor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link id="theme-link" rel="stylesheet" href="css/theme-dark.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>SK Editor</h2>
+                <button id="theme-toggle" class="btn-icon">🌙</button>
+            </div>
+            <div id="file-tree"></div>
+            <div class="sidebar-actions">
+                <button id="new-file-btn" class="btn">+ Novo Arquivo</button>
+                <button id="import-btn" class="btn">📥 Importar ZIP</button>
+                <button id="export-btn" class="btn">📤 Exportar ZIP</button>
+                <button id="github-btn" class="btn">🐙 GitHub</button>
+            </div>
+        </div>
+
+        <div class="editor-section">
+            <div id="tabs-container"></div>
+            <textarea id="editor"></textarea>
+        </div>
+
+        <div class="preview-section">
+            <div class="preview-header">
+                <h3>Preview</h3>
+                <button id="refresh-preview" class="btn-icon">🔄</button>
+            </div>
+            <div id="preview"></div>
+        </div>
+    </div>
+
+    <input type="file" id="zip-input" accept=".zip" style="display:none;">
+
+    <!-- Bibliotecas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+    <!-- Módulos do Sistema (ORDEM IMPORTANTE!) -->
+    <script src="js/mini-vfs.js"></script>
+    <script src="js/mini-filetree.js"></script>
+    <script src="js/mini-tabs.js"></script>
+    <script src="js/mini-preview.js"></script>
+    <script src="js/mini-youtube.js"></script>
+    <script src="js/mini-import-export.js"></script>
+    <script src="js/mini-github.js"></script>
+    <script src="js/mini-theme.js"></script>
+    <script src="js/mini-editor.js"></script>
+</body>
+</html>
