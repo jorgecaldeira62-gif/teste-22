@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 SK Mini Editor - Gerador de Arquivos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .file-group {
+            margin-bottom: 25px;
+        }
+
+        .file-group-title {
+            background: #f0f1ff;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .file-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .file-item:hover {
+            background: #f0f1ff;
+            transform: translateX(5px);
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #333;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .file-path {
+            color: #999;
+            font-size: 12px;
+            font-family: monospace;
+            margin-bottom: 10px;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-btn.copied {
+            background: #28a745;
+        }
+
+        .code-area {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            user-select: all;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #0c5460;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #155724;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .step-counter {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .file-count {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .footer {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .tabs {
+                gap: 8px;
+            }
+
+            .tab-btn {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .file-item {
+                padding: 12px;
+            }
+
+            .code-area {
+                font-size: 11px;
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 SK Mini Editor</h1>
+            <p>Gerador Interativo de Arquivos</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="mudarAba('passo1')">1️⃣ Pastas</button>
+            <button class="tab-btn" onclick="mudarAba('passo2')">2️⃣ HTML</button>
+            <button class="tab-btn" onclick="mudarAba('passo3')">3️⃣ CSS</button>
+            <button class="tab-btn" onclick="mudarAba('passo4')">4️⃣ JS</button>
+            <button class="tab-btn" onclick="mudarAba('passo5')">5️⃣ Finalizar</button>
+        </div>
+
+        <!-- PASSO 1: PASTAS -->
+        <div id="passo1" class="content active">
+            <div class="info-box">
+                ℹ️ <strong>Passo 1:</strong> Crie as pastas do projeto
+            </div>
+
+            <div class="step-title">
+                <span class="step-counter">1</span>
+                Abra o Terminal/CMD
+            </div>
+            <p style="color: #666; margin-bottom: 15px; font-size: 14px;">
+                🪟 <strong>Windows:</strong> Pressione Windows + R, digite "cmd" e aperte Enter<br>
+                🍎 <strong>Mac/Linux:</strong> Abra o Terminal
+            </p>
+
+            <div class="file-group">
+                <div class="file-group-title">🪟 Windows - Cole isto:</div>
+                <div class="file-item">
+                    <div class="file-name">Comando Windows</div>
+                    <div class="code-area">mkdir sk-mini-editor
+cd sk-mini-editor
+mkdir css
+mkdir js
+mkdir lib
+echo Estrutura criada!</div>
+                    <button class="copy-btn" onclick="copiar(this)">📋 Copiar Comando</button>
+                </div>
+            </div>
+
+            <div class="file-group">
+                <div class="file-group-title">🍎 Mac/Linux - Cole isto:</div>
+                <div class="file-item">
+                    <div class="file-name">Comando Mac/Linux</div>
+                    <div class="code-area">mkdir -p sk-mini-editor/{css,js,lib}
+cd sk-mini-editor
+echo "Estrutura criada!"</div>
+                    <button class="copy-btn" onclick="copiar(this)">📋 Copiar Comando</button>
+                </div>
+            </div>
+
+            <div class="success-box">
+                ✅ Após executar, você terá a pasta "sk-mini-editor" com as subpastas css, js e lib
+            </div>
+
+            <button class="tab-btn" style="width: 100%; margin-top: 20px;" onclick="mudarAba('passo2')">
+                ➡️ Próximo: Criar Arquivos
+            </button>
+        </div>
+
+        <!-- PASSO 2: HTML -->
+        <div id="passo2" class="content">
+            <div class="info-box">
+                ℹ️ <strong>Passo 2:</strong> Crie o arquivo HTML principal
+            </div>
+
+            <div class="file-group">
+                <div class="file-group-title">📄 index.html</div>
+                <div class="file-item">
+                    <div class="file-path">Caminho: sk-mini-editor/index.html</div>
+                    <button class="copy-btn" onclick="copiarHTML(this)">📋 Copiar Conteúdo</button>
+                    <div class="code-area" id="html-content" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                ⚠️ <strong>Como fazer:</strong><br>
+                1. Abra um editor de texto (Notepad, VS Code, etc)<br>
+                2. Cole o conteúdo acima<br>
+                3. Salve como "index.html" na pasta sk-mini-editor<br>
+                4. Certifique-se que é .html e não .txt
+            </div>
+
+            <button class="tab-btn" style="width: 100%; margin-top: 20px;" onclick="mudarAba('passo3')">
+                ➡️ Próximo: Arquivos CSS
+            </button>
+        </div>
+
+        <!-- PASSO 3: CSS -->
+        <div id="passo3" class="content">
+            <div class="info-box">
+                ℹ️ <strong>Passo 3:</strong> Crie os 9 arquivos CSS
+            </div>
+
+            <div id="css-files"></div>
+
+            <div class="warning-box">
+                ⚠️ <strong>Como fazer:</strong><br>
+                1. Para cada arquivo CSS abaixo:<br>
+                2. Copie o conteúdo<br>
+                3. Cole em um editor de texto<br>
+                4. Salve na pasta "css" com o nome exato<br>
+                5. Exemplo: "style.css" na pasta "sk-mini-editor/css/"
+            </div>
+
+            <button class="tab-btn" style="width: 100%; margin-top: 20px;" onclick="mudarAba('passo4')">
+                ➡️ Próximo: Arquivos JavaScript
+            </button>
+        </div>
+
+        <!-- PASSO 4: JS -->
+        <div id="passo4" class="content">
+            <div class="info-box">
+                ℹ️ <strong>Passo 4:</strong> Crie os 17 arquivos JavaScript
+            </div>
+
+            <div id="js-files"></div>
+
+            <div class="warning-box">
+                ⚠️ <strong>Como fazer:</strong><br>
+                1. Para cada arquivo JS abaixo:<br>
+                2. Copie o conteúdo<br>
+                3. Cole em um editor de texto<br>
+                4. Salve na pasta "js" com o nome exato<br>
+                5. Exemplo: "mini-utils.js" na pasta "sk-mini-editor/js/"
+            </div>
+
+            <button class="tab-btn" style="width: 100%; margin-top: 20px;" onclick="mudarAba('passo5')">
+                ➡️ Próximo: Finalizar
+            </button>
+        </div>
+
+        <!-- PASSO 5: FINALIZAR -->
+        <div id="passo5" class="content">
+            <div class="success-box">
+                ✅ <strong>Parabéns!</strong> Você completou todos os passos!
+            </div>
+
+            <div class="file-group">
+                <div class="file-group-title">📁 Estrutura Final</div>
+                <div class="file-item">
+                    <div class="code-area">sk-mini-editor/
+├── index.html
+├── css/
+│   ├── style.css
+│   ├── sidebar.css
+│   ├── editor.css
+│   ├── tabs.css
+│   ├── preview.css
+│   ├── buttons.css
+│   ├── responsive.css
+│   ├── theme-dark.css
+│   └── theme-light.css
+├── js/
+│   ├── mini-utils.js
+│   ├── mini-validator.js
+│   ├── mini-storage.js
+│   ├── mini-vfs.js
+│   ├── mini-filetree.js
+│   ├── mini-tabs.js
+│   ├── mini-preview.js
+│   ├── mini-youtube.js
+│   ├── mini-import-export.js
+│   ├── mini-github.js
+│   ├── mini-theme.js
+│   ├── mini-syntax.js
+│   ├── mini-search.js
+│   ├── mini-shortcuts.js
+│   ├── mini-events.js
+│   ├── mini-editor.js
+│   └── mini-init.js
+└── lib/ (vazia)</div>
+                </div>
+            </div>
+
+            <div class="file-group">
+                <div class="file-group-title">🚀 Como Usar</div>
+                <div class="file-item">
+                    <div class="code-area">1. Abra a pasta sk-mini-editor
+2. Clique duas vezes em index.html
+3. O navegador abre automaticamente
+4. Comece a usar o editor!
+
+PRONTO! 🎉</div>
+                </div>
+            </div>
+
+            <div class="file-group">
+                <div class="file-group-title">✨ Funcionalidades</div>
+                <div class="file-item" style="border-left: 4px solid #28a745;">
+                    <div style="color: #155724; font-size: 14px; line-height: 1.8;">
+                        ✅ Editor de código com abas<br>
+                        ✅ Preview em tempo real<br>
+                        ✅ Árvore de arquivos<br>
+                        ✅ Integração YouTube<br>
+                        ✅ Importar/Exportar ZIP<br>
+                        ✅ GitHub integrado<br>
+                        ✅ Temas claro/escuro<br>
+                        ✅ Responsivo (mobile)<br>
+                        ✅ Armazenamento local<br>
+                        ✅ Atalhos de teclado
+                    </div>
+                </div>
+            </div>
+
+            <button class="tab-btn" style="width: 100%; margin-top: 20px; background: #28a745; border-color: #28a745; color: white;">
+                ✅ Tudo Pronto!
+            </button>
+        </div>
+
+        <div class="footer">
+            <p>SK Mini Editor v1.0 | Gerador Interativo</p>
+            <p>Desenvolvido para funcionar 100% no seu computador</p>
+        </div>
+    </div>
+
+    <script>
+        // Conteúdo dos arquivos
+        const arquivos = {
+            'index.html': `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SK Mini Editor - Sistema Completo</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="css/tabs.css">
+    <link rel="stylesheet" href="css/preview.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link id="theme-link" rel="stylesheet" href="css/theme-dark.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">SK Editor</h1>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="btn-icon" title="Alternar tema">🌙</button>
+                    <button id="menu-toggle" class="btn-icon" title="Menu">☰</button>
+                </div>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-files" class="search-input" placeholder="🔍 Buscar arquivos...">
+            </div>
+            <div class="filetree-container">
+                <div class="filetree-header">
+                    <h3>Arquivos</h3>
+                    <button id="collapse-tree" class="btn-icon" title="Recolher">−</button>
+                </div>
+                <div id="file-tree" class="file-tree"></div>
+            </div>
+            <div class="sidebar-actions">
+                <button id="new-file-btn" class="btn btn-primary">+ Novo Arquivo</button>
+                <button id="new-folder-btn" class="btn btn-secondary">📁 Nova Pasta</button>
+                <button id="import-btn" class="btn btn-info">📥 Importar ZIP</button>
+                <button id="export-btn" class="btn btn-success">📤 Exportar ZIP</button>
+                <button id="github-btn" class="btn btn-github">🐙 GitHub</button>
+                <button id="clear-btn" class="btn btn-danger">🗑️ Limpar Tudo</button>
+            </div>
+            <div class="sidebar-footer">
+                <p>SK Editor v1.0</p>
+                <p id="file-count">0 arquivos</p>
+            </div>
+        </aside>
+        <main class="editor-section">
+            <div class="tabs-wrapper">
+                <div id="tabs-container" class="tabs-container"></div>
+                <button id="close-all-tabs" class="btn-icon" title="Fechar todas">✕</button>
+            </div>
+            <div class="editor-wrapper">
+                <textarea id="editor" class="editor" placeholder="Selecione um arquivo para começar..."></textarea>
+                <div class="editor-status">
+                    <span id="line-count">Ln 1, Col 1</span>
+                    <span id="char-count">0 caracteres</span>
+                </div>
+            </div>
+        </main>
+        <aside class="preview-section">
+            <div class="preview-header">
+                <h3>Preview</h3>
+                <div class="preview-actions">
+                    <button id="refresh-preview" class="btn-icon" title="Atualizar">🔄</button>
+                    <button id="fullscreen-preview" class="btn-icon" title="Tela cheia">⛶</button>
+                </div>
+            </div>
+            <div id="preview" class="preview-content"></div>
+        </aside>
+    </div>
+    <input type="file" id="zip-input" accept=".zip" style="display:none;">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"><\/script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"><\/script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"><\/script>
+    <script src="js/mini-utils.js"><\/script>
+    <script src="js/mini-validator.js"><\/script>
+    <script src="js/mini-storage.js"><\/script>
+    <script src="js/mini-vfs.js"><\/script>
+    <script src="js/mini-filetree.js"><\/script>
+    <script src="js/mini-tabs.js"><\/script>
+    <script src="js/mini-preview.js"><\/script>
+    <script src="js/mini-youtube.js"><\/script>
+    <script src="js/mini-import-export.js"><\/script>
+    <script src="js/mini-github.js"><\/script>
+    <script src="js/mini-theme.js"><\/script>
+    <script src="js/mini-syntax.js"><\/script>
+    <script src="js/mini-search.js"><\/script>
+    <script src="js/mini-shortcuts.js"><\/script>
+    <script src="js/mini-events.js"><\/script>
+    <script src="js/mini-editor.js"><\/script>
+    <script src="js/mini-init.js"><\/script>
+</body>
+</html>`,
+
+            'style.css': `* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
