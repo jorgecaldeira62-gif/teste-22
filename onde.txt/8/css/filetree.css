@@ -1,0 +1,288 @@
+/* ─── FileTree Container ─────────────────────────────────────────── */
+.filetree-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  user-select: none;
+}
+
+.filetree-root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Node Header ────────────────────────────────────────────────── */
+.filetree-node-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-left: 2px solid transparent;
+}
+
+.filetree-node-header:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.filetree-node-header.active {
+  background-color: rgba(31, 111, 235, 0.1);
+  border-left-color: #1f6feb;
+  color: #58a6ff;
+}
+
+.filetree-node-file .filetree-node-header {
+  padding-left: 0.75rem;
+}
+
+/* ─── Toggle Button ──────────────────────────────────────────────── */
+.filetree-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: none;
+  border: none;
+  color: #6e7681;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.filetree-toggle:hover {
+  color: #8b949e;
+}
+
+.filetree-toggle-placeholder {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* ─── Icons ──────────────────────────────────────────────────────── */
+.filetree-icon-folder {
+  color: #d4a574;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.filetree-icon-file {
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* ─── Node Name ──────────────────────────────────────────────────── */
+.filetree-node-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #c9d1d9;
+}
+
+.filetree-node-header.active .filetree-node-name {
+  color: #58a6ff;
+}
+
+/* ─── Menu Button ────────────────────────────────────────────────── */
+.filetree-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: none;
+  border: none;
+  color: #6e7681;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+  border-radius: 0.375rem;
+  padding: 0;
+  font-size: 0.75rem;
+}
+
+.filetree-node-header:hover .filetree-menu-btn {
+  opacity: 1;
+}
+
+.filetree-menu-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #8b949e;
+}
+
+.filetree-menu-btn:active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ─── Children Container ─────────────────────────────────────────── */
+.filetree-children {
+  display: flex;
+  flex-direction: column;
+}
+
+.filetree-node-dir {
+  display: flex;
+  flex-direction: column;
+}
+
+.filetree-node-file {
+  display: flex;
+  flex-direction: column;
+}
+
+.filetree-empty {
+  padding: 1rem 0.75rem;
+  text-align: center;
+  color: #6e7681;
+  font-size: 0.75rem;
+}
+
+/* ─── Bottom Sheet ───────────────────────────────────────────────── */
+.filetree-bottom-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.filetree-sheet-overlay {
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.filetree-sheet-content {
+  background-color: #222e18;
+  border-top: 1px solid #30363d;
+  border-radius: 1.5rem 1.5rem 0 0;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 75vh;
+}
+
+.filetree-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #30363d;
+}
+
+.filetree-sheet-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c9d1d9;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filetree-sheet-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+  color: #6e7681;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+
+.filetree-sheet-close:hover {
+  color: #8b949e;
+}
+
+.filetree-sheet-items {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
+
+.filetree-sheet-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: none;
+  border: none;
+  color: #c9d1d9;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.filetree-sheet-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.filetree-sheet-item:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.filetree-sheet-item i {
+  width: 1.25rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.filetree-sheet-item.text-red-400 {
+  color: #f85149;
+}
+
+.filetree-sheet-separator {
+  height: 1px;
+  background-color: #30363d;
+  margin: 0.5rem 0;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────── */
+.filetree-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.filetree-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filetree-container::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+
+.filetree-container::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+.filetree-sheet-items::-webkit-scrollbar {
+  width: 8px;
+}
+
+.filetree-sheet-items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filetree-sheet-items::-webkit-scrollbar-thumb {
+  background: #484f58;
+  border-radius: 4px;
+}
+
+.filetree-sheet-items::-webkit-scrollbar-thumb:hover {
+  background: #6e7681;
+}
