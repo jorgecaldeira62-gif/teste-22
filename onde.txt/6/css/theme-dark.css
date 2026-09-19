@@ -1,0 +1,22 @@
+.theme-dark {
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #252526;
+    --text-primary: #e0e0e0;
+    --text-secondary: #d4d4d4;
+    --accent: #0e639c;
+    --border: #3e3e42;
+}
+
+.theme-dark body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.theme-dark .sidebar {
+    background: var(--bg-secondary);
+}
+
+.theme-dark #editor {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+}
