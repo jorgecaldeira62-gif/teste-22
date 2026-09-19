@@ -1,0 +1,32 @@
+sk-mini-editor/
+├── index.html
+├── css/
+│   ├── style.css
+│   ├── responsive.css
+│   ├── theme-dark.css
+│   ├── theme-light.css
+│   ├── editor.css
+│   ├── sidebar.css
+│   ├── preview.css
+│   ├── tabs.css
+│   └── buttons.css
+├── js/
+│   ├── mini-vfs.js
+│   ├── mini-filetree.js
+│   ├── mini-tabs.js
+│   ├── mini-preview.js
+│   ├── mini-youtube.js
+│   ├── mini-import-export.js
+│   ├── mini-github.js
+│   ├── mini-theme.js
+│   ├── mini-editor.js
+│   ├── mini-events.js
+│   ├── mini-storage.js
+│   ├── mini-validator.js
+│   ├── mini-utils.js
+│   ├── mini-search.js
+│   ├── mini-syntax.js
+│   ├── mini-shortcuts.js
+│   └── mini-init.js
+└── lib/
+    └── (CDN - sem arquivos locais)
