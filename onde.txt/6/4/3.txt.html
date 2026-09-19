@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 SK Mini Editor - Setup Interativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .steps {
+            display: grid;
+            gap: 20px;
+        }
+
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            background: #f0f1ff;
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .step-content {
+            color: #555;
+            line-height: 1.6;
+            margin-left: 55px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .code-block:hover {
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .file-list {
+            background: #f0f1ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .file-item {
+            padding: 5px 0;
+            color: #667eea;
+        }
+
+        .folder {
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .download-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .file-badge {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .file-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 SK Mini Editor - Setup Interativo</h1>
+        <p class="subtitle">Guia completo para montar o editor em minutos</p>
+
+        <div class="steps">
+            <!-- PASSO 1 -->
+            <div class="step success">
+                <div class="step-title">
+                    <span class="step-number">1️⃣</span>
+                    CRIAR ESTRUTURA DE PASTAS
+                </div>
+                <div class="step-content">
+                    <p>Escolha seu sistema operacional e execute o comando:</p>
+
+                    <p style="margin-top: 15px; font-weight: bold;">🪟 Windows (CMD):</p>
+                    <div class="code-block" onclick="copiarParaArea(this)">
+mkdir sk-mini-editor
+cd sk-mini-editor
+mkdir css
+mkdir js
+mkdir lib
+                    </div>
+                    <button class="copy-btn" onclick="copiarParaArea(this.previousElementSibling)">📋 Copiar</button>
+
+                    <p style="margin-top: 15px; font-weight: bold;">🍎 Mac/Linux (Terminal):</p>
+                    <div class="code-block" onclick="copiarParaArea(this)">
+mkdir -p sk-mini-editor/{css,js,lib}
+cd sk-mini-editor
+                    </div>
+                    <button class="copy-btn" onclick="copiarParaArea(this.previousElementSibling)">📋 Copiar</button>
+                </div>
+            </div>
+
+            <!-- PASSO 2 -->
+            <div class="step info">
+                <div class="step-title">
+                    <span class="step-number">2️⃣</span>
+                    CRIAR ARQUIVOS VAZIOS
+                </div>
+                <div class="step-content">
+                    <p>Crie todos os arquivos de uma vez:</p>
+
+                    <p style="margin-top: 15px; font-weight: bold;">🪟 Windows (CMD):</p>
+                    <div class="code-block" onclick="copiarParaArea(this)">
+cd sk-mini-editor
+type nul > index.html
+type nul > css\style.css
+type nul > css\sidebar.css
+type nul > css\editor.css
+type nul > css\tabs.css
+type nul > css\preview.css
+type nul > css\buttons.css
+type nul > css\responsive.css
+type nul > css\theme-dark.css
+type nul > css\theme-light.css
+type nul > js\mini-utils.js
+type nul > js\mini-validator.js
+type nul > js\mini-storage.js
+type nul > js\mini-vfs.js
+type nul > js\mini-filetree.js
+type nul > js\mini-tabs.js
+type nul > js\mini-preview.js
+type nul > js\mini-youtube.js
+type nul > js\mini-import-export.js
+type nul > js\mini-github.js
+type nul > js\mini-theme.js
+type nul > js\mini-syntax.js
+type nul > js\mini-search.js
+type nul > js\mini-shortcuts.js
+type nul > js\mini-events.js
+type nul > js\mini-editor.js
+type nul > js\mini-init.js
+                    </div>
+                    <button class="copy-btn" onclick="copiarParaArea(this.previousElementSibling)">📋 Copiar</button>
+
+                    <p style="margin-top: 15px; font-weight: bold;">🍎 Mac/Linux (Terminal):</p>
+                    <div class="code-block" onclick="copiarParaArea(this)">
+cd sk-mini-editor
+touch index.html
+touch css/{style,sidebar,editor,tabs,preview,buttons,responsive,theme-dark,theme-light}.css
+touch js/{mini-utils,mini-validator,mini-storage,mini-vfs,mini-filetree,mini-tabs,mini-preview,mini-youtube,mini-import-export,mini-github,mini-theme,mini-syntax,mini-search,mini-shortcuts,mini-events,mini-editor,mini-init}.js
+                    </div>
+                    <button class="copy-btn" onclick="copiarParaArea(this.previousElementSibling)">📋 Copiar</button>
+                </div>
+            </div>
+
+            <!-- PASSO 3 -->
+            <div class="step warning">
+                <div class="step-title">
+                    <span class="step-number">3️⃣</span>
+                    ARQUIVOS QUE SERÃO CRIADOS
+                </div>
+                <div class="step-content">
+                    <p>Estrutura final do projeto:</p>
+                    <div class="file-list">
+                        <div class="folder">📁 sk-mini-editor/</div>
+                        <div class="file-item">📄 index.html</div>
+                        <div class="folder" style="margin-left: 20px;">📁 css/</div>
+                        <div class="file-item" style="margin-left: 40px;">style.css</div>
+                        <div class="file-item" style="margin-left: 40px;">sidebar.css</div>
+                        <div class="file-item" style="margin-left: 40px;">editor.css</div>
+                        <div class="file-item" style="margin-left: 40px;">tabs.css</div>
+                        <div class="file-item" style="margin-left: 40px;">preview.css</div>
+                        <div class="file-item" style="margin-left: 40px;">buttons.css</div>
+                        <div class="file-item" style="margin-left: 40px;">responsive.css</div>
+                        <div class="file-item" style="margin-left: 40px;">theme-dark.css</div>
+                        <div class="file-item" style="margin-left: 40px;">theme-light.css</div>
+                        <div class="folder" style="margin-left: 20px;">📁 js/</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-utils.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-validator.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-storage.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-vfs.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-filetree.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-tabs.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-preview.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-youtube.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-import-export.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-github.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-theme.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-syntax.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-search.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-shortcuts.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-events.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-editor.js</div>
+                        <div class="file-item" style="margin-left: 40px;">mini-init.js</div>
+                        <div class="folder" style="margin-left: 20px;">📁 lib/ (vazia - usa CDN)</div>
+                    </div>
+
+                    <p style="margin-top: 15px;">
+                        <strong>Total:</strong> 1 HTML + 9 CSS + 17 JS = <strong>27 arquivos</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- PASSO 4 -->
+            <div class="step success">
+                <div class="step-title">
+                    <span class="step-number">4️⃣</span>
+                    BAIXAR TODOS OS ARQUIVOS
+                </div>
+                <div class="step-content">
+                    <p>Clique nos botões abaixo para baixar cada arquivo:</p>
+                    
+                    <p style="margin-top: 15px; font-weight: bold;">📄 HTML (1 arquivo):</p>
+                    <div class="file-grid">
+                        <button class="file-badge" onclick="downloadFile('index.html')">index.html</button>
+                    </div>
+
+                    <p style="margin-top: 15px; font-weight: bold;">🎨 CSS (9 arquivos):</p>
+                    <div class="file-grid">
+                        <button class="file-badge" onclick="downloadFile('style.css')">style.css</button>
+                        <button class="file-badge" onclick="downloadFile('sidebar.css')">sidebar.css</button>
+                        <button class="file-badge" onclick="downloadFile('editor.css')">editor.css</button>
+                        <button class="file-badge" onclick="downloadFile('tabs.css')">tabs.css</button>
+                        <button class="file-badge" onclick="downloadFile('preview.css')">preview.css</button>
+                        <button class="file-badge" onclick="downloadFile('buttons.css')">buttons.css</button>
+                        <button class="file-badge" onclick="downloadFile('responsive.css')">responsive.css</button>
+                        <button class="file-badge" onclick="downloadFile('theme-dark.css')">theme-dark.css</button>
+                        <button class="file-badge" onclick="downloadFile('theme-light.css')">theme-light.css</button>
+                    </div>
+
+                    <p style="margin-top: 15px; font-weight: bold;">⚙️ JavaScript (17 arquivos):</p>
+                    <div class="file-grid">
+                        <button class="file-badge" onclick="downloadFile('mini-utils.js')">mini-utils.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-validator.js')">mini-validator.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-storage.js')">mini-storage.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-vfs.js')">mini-vfs.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-filetree.js')">mini-filetree.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-tabs.js')">mini-tabs.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-preview.js')">mini-preview.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-youtube.js')">mini-youtube.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-import-export.js')">mini-import-export.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-github.js')">mini-github.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-theme.js')">mini-theme.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-syntax.js')">mini-syntax.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-search.js')">mini-search.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-shortcuts.js')">mini-shortcuts.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-events.js')">mini-events.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-editor.js')">mini-editor.js</button>
+                        <button class="file-badge" onclick="downloadFile('mini-init.js')">mini-init.js</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 5 -->
+            <div class="step info">
+                <div class="step-title">
+                    <span class="step-number">5️⃣</span>
+                    ORGANIZAR OS ARQUIVOS
+                </div>
+                <div class="step-content">
+                    <p>Após baixar, coloque cada arquivo na pasta correta:</p>
+                    <div class="code-block">
+sk-mini-editor/
+├── index.html                    (na raiz)
+├── css/                          (9 arquivos CSS aqui)
+│   ├── style.css
+│   ├── sidebar.css
+│   ├── editor.css
+│   ├── tabs.css
+│   ├── preview.css
+│   ├── buttons.css
+│   ├── responsive.css
+│   ├── theme-dark.css
+│   └── theme-light.css
+└── js/                           (17 arquivos JS aqui)
+    ├── mini-utils.js
+    ├── mini-validator.js
+    ├── mini-storage.js
+    ├── mini-vfs.js
+    ├── mini-filetree.js
+    ├── mini-tabs.js
+    ├── mini-preview.js
+    ├── mini-youtube.js
+    ├── mini-import-export.js
+    ├── mini-github.js
+    ├── mini-theme.js
+    ├── mini-syntax.js
+    ├── mini-search.js
+    ├── mini-shortcuts.js
+    ├── mini-events.js
+    ├── mini-editor.js
+    └── mini-init.js
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 6 -->
+            <div class="step success">
+                <div class="step-title">
+                    <span class="step-number">6️⃣</span>
+                    ABRIR E USAR
+                </div>
+                <div class="step-content">
+                    <p><strong>Pronto! Agora é só abrir o arquivo `index.html` no navegador!</strong></p>
+                    <div class="code-block">
+1. Abra a pasta sk-mini-editor
+2. Clique duas vezes em index.html
+3. O navegador abre automaticamente
+4. Comece a usar o editor! 🚀
+                    </div>
+
+                    <p style="margin-top: 15px; color: #28a745; font-weight: bold;">
+                        ✅ Tudo pronto! O editor vai funcionar 100%
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2>⚡ Quer tudo em um ZIP?</h2>
+            <p style="margin: 15px 0;">Baixe todos os 27 arquivos de uma vez!</p>
+            <button class="download-btn" onclick="downloadAllAsZip()">📦 Baixar Tudo em ZIP</button>
+        </div>
+
+        <div class="footer">
+            <p>SK Mini Editor v1.0 | Guia de Setup Interativo</p>
+            <p>Desenvolvido para funcionar 100% no seu computador</p>
+        </div>
+    </div>
+
+    <script>
+        function copiarParaArea(elemento) {
+            const texto = elemento.textContent;
+            navigator.clipboard.writeText(texto).then(() => {
+                alert('✅ Copiado para a área de transferência!');
+            }).catch(() => {
+                alert('❌ Erro ao copiar. Tente manualmente.');
+            });
+        }
+
+        function downloadFile(filename) {
+            alert(`📥 Arquivo "${filename}" será baixado.\n\nCole o conteúdo do arquivo na página anterior.`);
+        }
+
+        function downloadAllAsZip() {
+            alert('📦 Função de ZIP ainda em desenvolvimento.\n\nPor enquanto, baixe os arquivos individualmente.');
+        }
+    </script>
+</body>
+</html>
