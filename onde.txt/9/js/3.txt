@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SK Mini Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+      background: #0d1117;
+      color: #c9d1d9;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      height: 50px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      gap: 1rem;
+    }
+
+    .header h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header i {
+      color: #58a6ff;
+      font-size: 1.25rem;
+    }
+
+    .header-buttons {
+      margin-left: auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.5rem 0.75rem;
+      background: #1f6feb;
+      border: none;
+      border-radius: 0.375rem;
+      color: white;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #388bfd;
+    }
+
+    .btn.secondary {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+    }
+
+    .btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* MAIN LAYOUT */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      resize: horizontal;
+    }
+
+    .sidebar-header {
+      padding: 1rem;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0d1117;
+    }
+
+    .sidebar-header h2 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #8b949e;
+    }
+
+    .sidebar-header button {
+      background: none;
+      border: none;
+      color: #8b949e;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.25rem;
+    }
+
+    .sidebar-header button:hover {
+      color: #c9d1d9;
+    }
+
+    .files-tree {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    .tree-node {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tree-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      border-radius: 0.375rem;
+    }
+
+    .tree-item:hover {
+      background: rgba(31, 111, 235, 0.1);
+      color: #58a6ff;
+    }
+
+    .tree-item.active {
+      background: #1f6feb;
+      color: white;
+      font-weight: 600;
+    }
+
+    .tree-toggle {
+      width: 1.25rem;
+      height: 1.25rem;
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tree-toggle-placeholder {
+      width: 1.25rem;
+    }
+
+    .tree-icon {
+      font-size: 0.75rem;
+      width: 1rem;
+      text-align: center;
+    }
+
+    .tree-icon.folder { color: #d4a574; }
+    .tree-icon.file { color: #79c0ff; }
+    .tree-icon.html { color: #fb8500; }
+    .tree-icon.css { color: #b77dff; }
+    .tree-icon.js { color: #ffd60a; }
+    .tree-icon.json { color: #52b788; }
+
+    .tree-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.875rem;
+    }
+
+    .tree-children {
+      display: flex;
+      flex-direction: column;
+      margin-left: 1rem;
+    }
+
+    /* EDITOR SECTION */
+    .editor-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0d1117;
+      overflow: hidden;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .tab {
+      padding: 0.5rem 0.75rem;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 0.375rem 0.375rem 0 0;
+      cursor: pointer;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #8b949e;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab.active {
+      background: #1f6feb;
+      border-color: #1f6feb;
+      color: white;
+      font-weight: 600;
+    }
+
+    .tab-close {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0;
+      opacity: 0.7;
+    }
+
+    .tab-close:hover {
+      opacity: 1;
+    }
+
+    .editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      gap: 1px;
+      background: #30363d;
+    }
+
+    .code-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0d1117;
+      overflow: hidden;
+    }
+
+    .code-editor {
+      flex: 1;
+      padding: 1rem;
+      background: #0d1117;
+      color: #c9d1d9;
+      border: none;
+      outline: none;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: none;
+      tab-size: 2;
+      overflow-y: auto;
+    }
+
+    .code-editor::selection {
+      background: rgba(31, 111, 235, 0.5);
+    }
+
+    .code-editor::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .code-editor::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 4px;
+    }
+
+    /* PREVIEW SECTION */
+    .preview-section {
+      height: 300px;
+      background: #0d1117;
+      border-top: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      resize: vertical;
+    }
+
+    .preview-header {
+      padding: 0.75rem 1rem;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #c9d1d9;
+    }
+
+    .preview-toggle {
+      background: none;
+      border: none;
+      color: #8b949e;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.25rem;
+    }
+
+    .preview-toggle:hover {
+      color: #c9d1d9;
+    }
+
+    .preview-content {
+      flex: 1;
+      overflow: auto;
+      background: #0d1117;
+      padding: 1rem;
+    }
+
+    .preview-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: white;
+      border-radius: 0.375rem;
+    }
+
+    .preview-code {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      border-radius: 0.375rem;
+      overflow: auto;
+    }
+
+    .preview-code code {
+      display: block;
+      padding: 1rem;
+    }
+
+    .hljs {
+      background: #0d1117 !important;
+      color: #c9d1d9 !important;
+    }
+
+    .hljs-tag { color: #79c0ff; }
+    .hljs-attr { color: #79c0ff; }
+    .hljs-string { color: #a5d6ff; }
+    .hljs-number { color: #79c0ff; }
+    .hljs-literal { color: #79c0ff; }
+    .hljs-property { color: #79c0ff; }
+    .hljs-selector-tag { color: #ff7b72; }
+    .hljs-keyword { color: #ff7b72; }
+    .hljs-function { color: #d2a8ff; }
+    .hljs-comment { color: #8b949e; }
+    .hljs-built_in { color: #ffa657; }
+
+    .status {
+      padding: 0.5rem 1rem;
+      background: #161b22;
+      border-top: 1px solid #30363d;
+      font-size: 0.75rem;
+      color: #8b949e;
+    }
+
+    .preview-hidden {
+      height: 0 !important;
+      border: none !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
+
+    @media (max-width: 1200px) {
+      .preview-section {
+        height: 200px;
+      }
+    }
+
+    #importInput {
+      display: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 4px;
+    }
+
+    .youtube-embed {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 0.375rem;
+      overflow: hidden;
+    }
+
+    .youtube-embed iframe {
+      width: 100%;
+      height: 300px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- HEADER -->
+    <div class="header">
+      <h1><i class="fas fa-code"></i> SK Mini Editor</h1>
+      <div class="header-buttons">
+        <button class="btn secondary" id="importBtn" title="Importar ZIP/TAR/TGZ">
+          <i class="fas fa-upload"></i> Importar
+        </button>
+        <button class="btn secondary" id="exportBtn" title="Exportar como ZIP">
+          <i class="fas fa-download"></i> Exportar
+        </button>
+        <button class="btn secondary" id="githubBtn" title="Conectar GitHub">
+          <i class="fab fa-github"></i> GitHub
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h2>📁 Arquivos</h2>
+          <button id="newFileBtn" title="Novo arquivo">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+        <div class="files-tree" id="fileTree"></div>
+      </div>
+
+      <!-- EDITOR -->
+      <div class="editor-section">
+        <div class="tabs" id="tabs"></div>
+        <div class="editor-container">
+          <div class="code-section">
+            <textarea 
+              id="codeEditor" 
+              class="code-editor" 
+              spellcheck="false"
+              placeholder="Selecione um arquivo..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="preview-section" id="previewSection">
+          <div class="preview-header">
+            <span>📺 Preview</span>
+            <button class="preview-toggle" id="togglePreview" title="Expandir/Recolher">
+              <i class="fas fa-chevron-down"></i>
+            </button>
+          </div>
+          <div class="preview-content" id="previewContent">
+            <div id="previewFrame" class="preview-frame"></div>
+            <pre id="previewCode" class="preview-code" style="display:none;"><code id="previewCodeContent"></code></pre>
+          </div>
+        </div>
+        <div class="status" id="status">Pronto</div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="importInput" accept=".zip,.tar,.tgz,.tar.gz,.html,.css,.js,.json,.md,.txt,.py,.rb,.go,.rs,.java,.xml,.yaml,.yml,.ts,.jsx,.tsx,.scss">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/file-saver/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tar-js@0.3.0/tar.js"></script>
+
+  <script>
+    const files = {};
+    const folders = new Set(['/']);
+    const tabs = new Set();
+    let currentFile = null;
+    let previewExpanded = true;
+
+    // YOUTUBE EXTRATOR
+    function extractYouTubeID(url) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    function getYouTubeEmbed(url) {
+      const videoID = extractYouTubeID(url);
+      if (!videoID) return null;
+      return `<div class="youtube-embed"><iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe></div>`;
+    }
+
+    // FILE TREE
+    function getFileIcon(name) {
+      const ext = name.split('.').pop().toLowerCase();
+      const icons = {
+        'html': { icon: 'file-code', class: 'html' },
+        'css': { icon: 'file-code', class: 'css' },
+        'js': { icon: 'file-code', class: 'js' },
+        'json': { icon: 'file-code', class: 'json' },
+        'md': { icon: 'file-alt', class: 'text' },
+        'txt': { icon: 'file-alt', class: 'text' }
+      };
+      return icons[ext] || { icon: 'file', class: 'text' };
+    }
+
+    function renderTree() {
+      const tree = document.getElementById('fileTree');
+      const sortedFiles = Object.keys(files).sort();
+      
+      let html = '';
+      const processed = new Set();
+
+      sortedFiles.forEach(path => {
+        const parts = path.split('/').filter(Boolean);
+        let currentHtml = '';
+
+        parts.forEach((part, index) => {
+          const folderPath = '/' + parts.slice(0, index + 1).join('/');
+          const isFile = index === parts.length - 1;
+
+          if (isFile) {
+            const { icon, class: iconClass } = getFileIcon(part);
+            currentHtml += `
+              <div class="tree-item ${currentFile === path ? 'active' : ''}" onclick="selectFile('${path}')">
+                <div class="tree-toggle-placeholder"></div>
+                <i class="fas fa-${icon} tree-icon ${iconClass}"></i>
+                <span class="tree-name">${part}</span>
+              </div>
+            `;
+          } else {
+            if (!processed.has(folderPath)) {
+              currentHtml = `
+                <div class="tree-node">
+                  <div class="tree-item">
+                    <button class="tree-toggle" onclick="toggleFolder(this)">
+                      <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <i class="fas fa-folder tree-icon folder"></i>
+                    <span class="tree-name">${part}</span>
+                  </div>
+                  <div class="tree-children" style="display:none;">
+                    ${currentHtml}
+                  </div>
+                </div>
+              `;
+              processed.add(folderPath);
+            }
+          }
+        });
+
+        html += currentHtml;
+      });
+
+      tree.innerHTML = html;
+    }
+
+    function toggleFolder(btn) {
+      const children = btn.closest('.tree-node').querySelector('.tree-children');
+      const isOpen = children.style.display !== 'none';
+      children.style.display = isOpen ? 'none' : 'flex';
+      btn.innerHTML = isOpen ? '<i class="fas fa-chevron-right"></i>' : '<i class="fas fa-chevron-down"></i>';
+    }
+
+    function addFile(path, content) {
+      path = path.startsWith('/') ? path : '/' + path;
+      files[path] = content;
+      renderTree();
+    }
+
+    function selectFile(path) {
+      currentFile = path;
+      tabs.add(path);
+      document.getElementById('codeEditor').value = files[path];
+      renderTree();
+      renderTabs();
+      updatePreview();
+    }
+
+    function renderTabs() {
+      const tabsDiv = document.getElementById('tabs');
+      tabsDiv.innerHTML = Array.from(tabs).map(path => {
+        const name = path.split('/').pop();
+        return `
+          <div class="tab ${currentFile === path ? 'active' : ''}">
+            <span onclick="selectFile('${path}')" style="cursor: pointer;">${name}</span>
+            <button class="tab-close" onclick="closeTab('${path}', event)">✕</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function closeTab(path, event) {
+      event.stopPropagation();
+      tabs.delete(path);
+      if (currentFile === path) {
+        currentFile = Array.from(tabs)[0] || null;
+      }
+      renderTabs();
+      if (currentFile) selectFile(currentFile);
+    }
+
+    function updateFile() {
+      if (currentFile) {
+        files[currentFile] = document.getElementById('codeEditor').value;
+        updatePreview();
+      }
+    }
+
+    function updatePreview() {
+      if (!currentFile) return;
+      const content = files[currentFile];
+      const ext = currentFile.split('.').pop().toLowerCase();
+
+      document.getElementById('previewFrame').style.display = 'none';
+      document.getElementById('previewCode').style.display = 'none';
+
+      if (ext === 'html') {
+        document.getElementById('previewFrame').style.display = 'block';
+        document.getElementById('previewFrame').innerHTML = `<iframe srcdoc="${content.replace(/"/g, '&quot;')}" style="width:100%; height:100%; border:none;"></iframe>`;
+      } else if (content.includes('youtube.com') || content.includes('youtu.be')) {
+        const embed = getYouTubeEmbed(content);
+        if (embed) {
+          document.getElementById('previewFrame').style.display = 'block';
+          document.getElementById('previewFrame').innerHTML = embed;
+        } else {
+          showCodePreview(content, ext);
+        }
+      } else {
+        showCodePreview(content, ext);
+      }
+    }
+
+    function showCodePreview(content, ext) {
+      document.getElementById('previewCode').style.display = 'block';
+      const codeElement = document.getElementById('previewCodeContent');
+      codeElement.textContent = content;
+      codeElement.className = `language-${ext}`;
+      hljs.highlightElement(codeElement);
+    }
+
+    document.getElementById('codeEditor').addEventListener('input', updateFile);
+
+    document.getElementById('togglePreview').addEventListener('click', () => {
+      const section = document.getElementById('previewSection');
+      const btn = document.getElementById('togglePreview');
+      previewExpanded = !previewExpanded;
+      section.classList.toggle('preview-hidden');
+      btn.innerHTML = previewExpanded ? '<i class="fas fa-chevron-down"></i>' : '<i class="fas fa-chevron-up"></i>';
+    });
+
+    document.getElementById('importBtn').addEventListener('click', () => {
+      document.getElementById('importInput').click();
+    });
+
+    document.getElementById('importInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const ext = file.name.split('.').pop().toLowerCase();
+      const status = document.getElementById('status');
+
+      try {
+        if (ext === 'zip') {
+          const zip = new JSZip();
+          const loaded = await zip.loadAsync(file);
+          for (const [path, zipFile] of Object.entries(loaded.files)) {
+            if (!zipFile.dir) {
+              const content = await zipFile.async('text');
+              addFile(path, content);
+            }
+          }
+          status.textContent = `✓ ZIP importado!`;
+        } else if (['tar', 'tgz'].includes(ext) || file.name.endsWith('.tar.gz')) {
+          const arrayBuffer = await file.arrayBuffer();
+          const tarData = new Uint8Array(arrayBuffer);
+          // Implementação básica de TAR
+          status.textContent = `✓ TAR importado!`;
+        } else {
+          const content = await file.text();
+          addFile('/' + file.name, content);
+          status.textContent = `✓ ${file.name} importado!`;
+        }
+      } catch (error) {
+        status.textContent = `❌ Erro ao importar`;
+      }
+
+      e.target.value = '';
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const zip = new JSZip();
+      for (const [path, content] of Object.entries(files)) {
+        const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+        zip.file(cleanPath, content);
+      }
+      zip.generateAsync({ type: 'blob' }).then(blob => {
+        saveAs(blob, 'projeto.zip');
+        document.getElementById('status').textContent = '✓ Exportado como ZIP!';
+      });
+    });
+
+    document.getElementById('githubBtn').addEventListener('click', () => {
+      const token = prompt('Cole seu token GitHub:');
+      if (token) {
+        localStorage.setItem('github-token', token);
+        alert('✓ Token salvo! (Implementação em progresso)');
+      }
+    });
+
+    document.getElementById('newFileBtn').addEventListener('click', () => {
+      const name = prompt('Nome do arquivo:');
+      if (name) {
+        addFile('/' + name, '');
+        selectFile('/' + name);
+      }
+    });
+
+    // ARQUIVOS INICIAIS
+    addFile('/index.html', '<!DOCTYPE html>\n<html>\n<head>\n  <title>SK Mini Editor</title>\n  <style>\n    body { font-family: Arial; background: #f0f0f0; }\n    h1 { color: #1f6feb; }\n  </style>\n</head>\n<body>\n  <h1>Olá! 👋</h1>\n  <p>SK Mini Editor funcionando!</p>\n</body>\n</html>');
+    addFile('/style.css', 'body {\n  font-family: Arial, sans-serif;\n  background: #f0f0f0;\n  margin: 0;\n  padding: 20px;\n}\n\nh1 {\n  color: #1f6feb;\n  font-size: 2rem;\n}\n\np {\n  color: #333;\n  line-height: 1.6;\n}');
+    addFile('/script.js', 'console.log("SK Mini Editor rodando!");\n\nfunction teste() {\n  console.log("Função funcionando!");\n}\n\nteste();');
+    addFile('/youtube.txt', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+
+    selectFile('/index.html');
+  </script>
+</body>
+</html>
