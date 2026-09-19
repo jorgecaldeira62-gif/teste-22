@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SK Mini Editor - TESTE</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto';
+      background: #0d1117;
+      color: #c9d1d9;
+      overflow: hidden;
+    }
+    .container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      gap: 1px;
+      background: #30363d;
+    }
+    .sidebar {
+      width: 280px;
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .sidebar h2 {
+      font-size: 0.875rem;
+      color: #8b949e;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+    .file-item {
+      padding: 0.75rem;
+      margin: 0.25rem 0;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+    .file-item:hover {
+      background: rgba(31, 111, 235, 0.1);
+      border-color: #1f6feb;
+      color: #58a6ff;
+    }
+    .file-item.active {
+      background: #1f6feb;
+      border-color: #1f6feb;
+      color: white;
+    }
+    .file-icon {
+      font-size: 0.75rem;
+      width: 1rem;
+      text-align: center;
+    }
+    .file-icon.html { color: #fb8500; }
+    .file-icon.css { color: #b77dff; }
+    .file-icon.js { color: #ffd60a; }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0d1117;
+    }
+    .header {
+      padding: 1rem;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .header h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .header i {
+      color: #58a6ff;
+      font-size: 1.5rem;
+    }
+    .buttons {
+      margin-left: auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn {
+      padding: 0.5rem 0.75rem;
+      background: #1f6feb;
+      border: none;
+      border-radius: 0.375rem;
+      color: white;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #388bfd;
+    }
+    .btn.secondary {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+    }
+    .btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .content {
+      flex: 1;
+      display: flex;
+      gap: 1px;
+      background: #30363d;
+      overflow: hidden;
+    }
+    .editor {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      overflow-x: auto;
+    }
+    .tab {
+      padding: 0.5rem 0.75rem;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 0.375rem 0.375rem 0 0;
+      cursor: pointer;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #8b949e;
+      transition: all 0.2s;
+    }
+    .tab:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .tab.active {
+      background: #1f6feb;
+      border-color: #1f6feb;
+      color: white;
+      font-weight: 600;
+    }
+    .tab-close {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0;
+      opacity: 0.7;
+    }
+    .tab-close:hover {
+      opacity: 1;
+    }
+    .code-area {
+      flex: 1;
+      padding: 1rem;
+      overflow: auto;
+      background: #0d1117;
+    }
+    .code-editor {
+      width: 100%;
+      height: 100%;
+      background: #0d1117;
+      color: #c9d1d9;
+      border: none;
+      outline: none;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: none;
+      padding: 0;
+    }
+    .preview {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      background: white;
+      border-left: 1px solid #30363d;
+    }
+    .preview-header {
+      padding: 0.75rem 1rem;
+      background: #f6f8fa;
+      border-bottom: 1px solid #d0d7de;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #24292f;
+    }
+    .preview-content {
+      flex: 1;
+      overflow: auto;
+    }
+    .preview-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .preview-image {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: #f6f8fa;
+    }
+    .preview-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .preview-text {
+      padding: 1rem;
+      overflow: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      white-space: pre-wrap;
+      color: #24292f;
+      line-height: 1.5;
+    }
+    .status {
+      padding: 0.5rem 1rem;
+      background: #161b22;
+      border-top: 1px solid #30363d;
+      font-size: 0.75rem;
+      color: #8b949e;
+    }
+    @media (max-width: 1200px) {
+      .preview { display: none; }
+    }
+    #importInput { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h2>📁 Arquivos</h2>
+      <div id="fileList"></div>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <i class="fas fa-code"></i>
+        <h1>SK Mini Editor - TESTE</h1>
+        <div class="buttons">
+          <button class="btn secondary" id="importBtn"><i class="fas fa-upload"></i> Importar</button>
+          <button class="btn secondary" id="exportBtn"><i class="fas fa-download"></i> Exportar</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="editor">
+          <div class="tabs" id="tabs"></div>
+          <div class="code-area">
+            <textarea id="editor" class="code-editor" placeholder="Selecione um arquivo..."></textarea>
+          </div>
+        </div>
+
+        <div class="preview">
+          <div class="preview-header">📺 Preview</div>
+          <div class="preview-content" id="preview">
+            <iframe id="previewFrame" class="preview-frame"></iframe>
+            <div id="previewImage" class="preview-image" style="display:none;"></div>
+            <div id="previewText" class="preview-text" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="status" id="status">Pronto</div>
+    </div>
+  </div>
+
+  <input type="file" id="importInput" accept=".zip,.html,.css,.js,.json,.md,.txt">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/file-saver/2.0.5/FileSaver.min.js"></script>
+
+  <script>
+    const files = {};
+    const tabs = new Set();
+    let currentFile = null;
+
+    function addFile(name, content) {
+      files[name] = content;
+      renderFiles();
+    }
+
+    function renderFiles() {
+      const list = document.getElementById('fileList');
+      list.innerHTML = Object.keys(files).map(name => {
+        const ext = name.split('.').pop();
+        let icon = 'file';
+        let iconClass = '';
+        if (ext === 'html') { icon = 'file-code'; iconClass = 'html'; }
+        else if (ext === 'css') { icon = 'file-code'; iconClass = 'css'; }
+        else if (ext === 'js') { icon = 'file-code'; iconClass = 'js'; }
+        
+        return `
+          <div class="file-item ${currentFile === name ? 'active' : ''}" onclick="selectFile('${name}')">
+            <i class="fas fa-${icon} file-icon ${iconClass}"></i>
+            <span>${name}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectFile(name) {
+      currentFile = name;
+      tabs.add(name);
+      document.getElementById('editor').value = files[name];
+      renderFiles();
+      renderTabs();
+      updatePreview();
+    }
+
+    function renderTabs() {
+      const tabsDiv = document.getElementById('tabs');
+      tabsDiv.innerHTML = Array.from(tabs).map(name => `
+        <div class="tab ${currentFile === name ? 'active' : ''}">
+          <span onclick="selectFile('${name}')">${name}</span>
+          <button class="tab-close" onclick="closeTab('${name}')">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function closeTab(name) {
+      tabs.delete(name);
+      if (currentFile === name) {
+        currentFile = Array.from(tabs)[0] || null;
+      }
+      renderTabs();
+      if (currentFile) selectFile(currentFile);
+    }
+
+    function updateFile() {
+      if (currentFile) {
+        files[currentFile] = document.getElementById('editor').value;
+        updatePreview();
+      }
+    }
+
+    function updatePreview() {
+      if (!currentFile) return;
+      const content = files[currentFile];
+      const ext = currentFile.split('.').pop();
+      
+      document.getElementById('previewFrame').style.display = 'none';
+      document.getElementById('previewImage').style.display = 'none';
+      document.getElementById('previewText').style.display = 'none';
+
+      if (ext === 'html') {
+        document.getElementById('previewFrame').style.display = 'block';
+        document.getElementById('previewFrame').srcDoc = content;
+      } else {
+        document.getElementById('previewText').style.display = 'block';
+        document.getElementById('previewText').innerHTML = `<pre>${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`;
+      }
+    }
+
+    document.getElementById('editor').addEventListener('input', updateFile);
+
+    document.getElementById('importBtn').addEventListener('click', () => {
+      document.getElementById('importInput').click();
+    });
+
+    document.getElementById('importInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const ext = file.name.split('.').pop().toLowerCase();
+      
+      if (ext === 'zip') {
+        const zip = new JSZip();
+        const loaded = await zip.loadAsync(file);
+        for (const [path, zipFile] of Object.entries(loaded.files)) {
+          if (!zipFile.dir) {
+            const content = await zipFile.async('text');
+            addFile(path.split('/').pop(), content);
+          }
+        }
+      } else {
+        const content = await file.text();
+        addFile(file.name, content);
+      }
+
+      document.getElementById('status').textContent = `✓ ${file.name} importado!`;
+      e.target.value = '';
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const zip = new JSZip();
+      for (const [name, content] of Object.entries(files)) {
+        zip.file(name, content);
+      }
+      zip.generateAsync({ type: 'blob' }).then(blob => {
+        saveAs(blob, 'projeto.zip');
+        document.getElementById('status').textContent = '✓ Exportado como ZIP!';
+      });
+    });
+
+    addFile('index.html', '<!DOCTYPE html>\n<html>\n<head>\n  <title>Teste</title>\n</head>\n<body>\n  <h1>Olá!</h1>\n  <p>SK Mini Editor funcionando!</p>\n</body>\n</html>');
+    addFile('style.css', 'body {\n  font-family: Arial;\n  background: #f0f0f0;\n}\n\nh1 {\n  color: blue;\n}');
+    addFile('script.js', 'console.log("Funcionando!");\nalert("SK Mini Editor está rodando!");');
+
+    selectFile('index.html');
+  </script>
+</body>
+</html>
