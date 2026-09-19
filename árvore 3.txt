@@ -1,0 +1,16 @@
+projeto/
+│
+├─ index.html (ARQUIVO ÚNICO - TUDO AQUI)
+│
+├─ js/ (PARA MODULARIZAR DEPOIS)
+│  ├─ mini-vfs.js (Sistema de arquivos)
+│  ├─ mini-filetree.js (Árvore)
+│  ├─ mini-editor.js (Lógica do editor)
+│  ├─ mini-github.js (GitHub)
+│  └─ mini-youtube.js (YouTube)
+│
+├─ css/ (PARA MODULARIZAR DEPOIS)
+│  ├─ style.css (Estilos)
+│  └─ theme.css (Tema)
+│
+└─ README.md (Documentação)
