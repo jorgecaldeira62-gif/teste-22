@@ -1,0 +1,72 @@
+import { GitBranch, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+
+interface GitHubStatusProps {
+  connected: boolean;
+  username?: string;
+  repo?: string;
+  syncing?: boolean;
+  lastSync?: Date;
+  onConnect?: () => void;
+  onDisconnect?: () => void;
+}
+
+export default function GitHubStatus({
+  connected,
+  username,
+  repo,
+  syncing,
+  lastSync,
+  onConnect,
+  onDisconnect,
+}: GitHubStatusProps) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-3 bg-[#1c2714] border border-gray-700/30 rounded-lg">
+      <GitBranch size={18} className="text-green-400" />
+      
+      {connected ? (
+        <>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-200">
+              {username}/{repo}
+            </p>
+            <p className="text-xs text-gray-500">
+              {syncing ? (
+                <span className="flex items-center gap-1">
+                  <Loader2 size={12} className="animate-spin" />
+                  Sincronizando...
+                </span>
+              ) : lastSync ? (
+                `Última sincronização: ${lastSync.toLocaleTimeString('pt-BR')}`
+              ) : (
+                'Conectado'
+              )}
+            </p>
+          </div>
+          <button
+            onClick={onDisconnect}
+            className="px-3 py-1 text-xs bg-red-500/10 text-red-400 rounded hover:bg-red-500/20"
+          >
+            Desconectar
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-gray-200">
+              Não conectado
+            </p>
+            <p className="text-xs text-gray-500">
+              Conecte ao GitHub para sincronizar
+            </p>
+          </div>
+          <button
+            onClick={onConnect}
+            className="px-3 py-1 text-xs bg-green-500/10 text-green-400 rounded hover:bg-green-500/20"
+          >
+            Conectar
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
