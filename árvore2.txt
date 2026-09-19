@@ -1,0 +1,92 @@
+sk-mini-editor/
+│
+├─ 📄 index.html (ARQUIVO PRINCIPAL - carrega tudo)
+│
+├─ 📁 js/
+│  ├─ 🎬 mini-youtube.js
+│  │  ├─ extractVideoID(url)
+│  │  ├─ getEmbedCode(url)
+│  │  └─ render(url, containerId)
+│  │
+│  ├─ 📺 mini-preview.js
+│  │  ├─ updatePreview(content, ext)
+│  │  ├─ showCodePreview(content, ext)
+│  │  ├─ showHTMLPreview(content)
+│  │  └─ showYouTubePreview(url)
+│  │
+│  ├─ 🌳 mini-filetree.js
+│  │  ├─ renderTree()
+│  │  ├─ toggleFolder(btn)
+│  │  ├─ getFileIcon(name)
+│  │  └─ selectFile(path)
+│  │
+│  ├─ 📂 mini-vfs.js (Virtual File System)
+│  │  ├─ addFile(path, content)
+│  │  ├─ getFile(path)
+│  │  ├─ updateFile(path, content)
+│  │  ├─ deleteFile(path)
+│  │  └─ getAllFiles()
+│  │
+│  ├─ 📋 mini-tabs.js
+│  │  ├─ renderTabs()
+│  │  ├─ addTab(path)
+│  │  ├─ closeTab(path)
+│  │  └─ selectTab(path)
+│  │
+│  ├─ 💾 mini-import-export.js
+│  │  ├─ handleImport(file)
+│  │  ├─ importZip(file)
+│  │  ├─ importTar(file)
+│  │  ├─ exportZip()
+│  │  └─ exportTar()
+│  │
+│  ├─ 🐙 mini-github.js
+│  │  ├─ connectGitHub(token)
+│  │  ├─ pushToGitHub(repo, files)
+│  │  ├─ pullFromGitHub(repo)
+│  │  └─ disconnectGitHub()
+│  │
+│  ├─ ⌨️ mini-editor.js (LÓGICA PRINCIPAL)
+│  │  ├─ setupElements()
+│  │  ├─ setupEventListeners()
+│  │  ├─ updateFile()
+│  │  ├─ createNewFile()
+│  │  └─ showContextMenu(path)
+│  │
+│  └─ 🎨 mini-theme.js
+│     ├─ applyTheme(theme)
+│     ├─ toggleDarkMode()
+│     └─ customizeColors()
+│
+├─ 📁 css/
+│  ├─ 🎨 style.css (ESTILOS PRINCIPAIS)
+│  │  ├─ Layout geral
+│  │  ├─ Header
+│  │  ├─ Sidebar
+│  │  ├─ Editor
+│  │  └─ Preview
+│  │
+│  ├─ 🌙 theme-dark.css
+│  │  └─ Cores escuras
+│  │
+│  ├─ ☀️ theme-light.css
+│  │  └─ Cores claras
+│  │
+│  └─ 📱 responsive.css
+│     └─ Mobile/Tablet
+│
+├─ 📁 lib/
+│  ├─ jszip.min.js (Importar/Exportar ZIP)
+│  ├─ file-saver.min.js (Baixar arquivos)
+│  ├─ highlight.js (Syntax Highlighting)
+│  ├─ tar.js (Importar/Exportar TAR)
+│  └─ font-awesome.min.css (Ícones)
+│
+├─ 📁 data/
+│  ├─ 📝 exemplo-projeto.zip
+│  ├─ 📝 template-html.html
+│  └─ 📝 template-css.css
+│
+├─ 📄 README.md (Documentação)
+├─ 📄 LICENSE (Licença)
+└─ 📄 package.json (Dependências)
