@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- ESTILOS -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme-dark.css">
+  <link rel="stylesheet" href="lib/font-awesome.min.css">
+  <link rel="stylesheet" href="lib/highlight.min.css">
+</head>
+<body>
+  <!-- HTML AQUI -->
+
+  <!-- BIBLIOTECAS EXTERNAS -->
+  <script src="lib/jszip.min.js"></script>
+  <script src="lib/file-saver.min.js"></script>
+  <script src="lib/highlight.min.js"></script>
+  <script src="lib/tar.js"></script>
+
+  <!-- MÓDULOS (ordem de dependência) -->
+  <script src="js/mini-vfs.js"></script>
+  <script src="js/mini-filetree.js"></script>
+  <script src="js/mini-tabs.js"></script>
+  <script src="js/mini-youtube.js"></script>
+  <script src="js/mini-preview.js"></script>
+  <script src="js/mini-import-export.js"></script>
+  <script src="js/mini-github.js"></script>
+  <script src="js/mini-theme.js"></script>
+  <script src="js/mini-editor.js"></script>
+</body>
+</html>
